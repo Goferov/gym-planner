@@ -52,3 +52,34 @@ export async function getMe() {
     const { data } = await api.get('/getUser');
     return data;
 }
+
+export async function getExercises(params = {}) {
+    const { data } = await api.get('/exercises', { params });
+    return data; // Array obiektów Exercise
+}
+
+export async function getExercise(id) {
+    const { data } = await api.get(`/exercises/${id}`);
+    return data.data; // Pojedynczy obiekt z polami {id, name, ... muscleGroups ...}
+}
+
+
+export async function createExercise(exerciseData) {
+    const { data } = await api.post('/exercises', exerciseData);
+    return data; // Zwraca utworzone ćwiczenie
+}
+
+
+export async function updateExercise(id, exerciseData) {
+    const { data } = await api.put(`/exercises/${id}`, exerciseData);
+    return data; // Zwraca zaktualizowany obiekt
+}
+
+
+export async function deleteExercise(id) {
+    return await api.delete(`/exercises/${id}`);
+}
+
+export async function muscleGroups() {
+    return await api.get(`/muscle-groups`);
+}
