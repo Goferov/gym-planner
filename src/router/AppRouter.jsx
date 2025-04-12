@@ -8,9 +8,11 @@ import Register from '../pages/Auth/Register';
 
 import TrainerLayout from '../pages/Trainer/TrainerLayout';
 import TrainerDashboard from '../pages/Trainer/TrainerDashboard';
+import ExercisesList from '../pages/Trainer/ExercisesList';
 
 import PublicRoute from './PublicRoute';
 import ProtectedRoute from './ProtectedRoute';
+import ExerciseForm from "@/pages/Trainer/ExercisesForm.jsx";
 
 function AppRouter() {
     return (
@@ -50,7 +52,9 @@ function AppRouter() {
                     }
                 >
                     <Route index element={<TrainerDashboard />} />
-                    {/*<Route path="dashboard" element={<TrainerDashboard />} />*/}
+                    <Route path="exercises" element={<ExercisesList />} />
+                    <Route path="exercises/add" element={<ExerciseForm />} />
+                    <Route path="exercises/add/:id" element={<ExerciseForm />} />
                 </Route>
 
                 <Route path="*" element={<div>404 - Not Found</div>} />
