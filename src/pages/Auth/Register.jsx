@@ -1,168 +1,157 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-// import funkcję z axios.js
-import { registerTrainer } from '../../api/axios';
+"use client"
+
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { registerTrainer } from "../../api/axios"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Dumbbell, UserPlus, ArrowLeft } from "lucide-react"
 
 function Register() {
-    // Stan pól formularza
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [passwordConfirmation, setPasswordConfirmation] = useState('');
+    const [name, setName] = useState("")
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const [passwordConfirmation, setPasswordConfirmation] = useState("")
+    const [errors, setErrors] = useState({})
+    const [serverError, setServerError] = useState("")
+    const [serverSuccess, setServerSuccess] = useState("")
+    const [isLoading, setIsLoading] = useState(false)
 
-    const [errors, setErrors] = useState({});
-
-    const [serverError, setServerError] = useState('');
-    const [serverSuccess, setServerSuccess] = useState('');
-
-    const navigate = useNavigate();
+    const navigate = useNavigate()
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        setErrors({});
-        setServerError('');
-        setServerSuccess('');
+        e.preventDefault()
+        setErrors({})
+        setServerError("")
+        setServerSuccess("")
+        setIsLoading(true)
 
-        const newErrors = {};
+        const newErrors = {}
 
         if (!name.trim()) {
-            newErrors.name = 'Imię jest wymagane.';
+            newErrors.name = "Name is required."
         }
         if (!email.trim()) {
-            newErrors.email = 'Email jest wymagany.';
+            newErrors.email = "Email is required."
         } else if (!/^\S+@\S+\.\S+$/.test(email)) {
-            newErrors.email = 'Niepoprawny format email.';
+            newErrors.email = "Invalid email format."
         }
         if (!password) {
-            newErrors.password = 'Hasło jest wymagane.';
+            newErrors.password = "Password is required."
         } else if (password.length < 8) {
-            newErrors.password = 'Hasło musi mieć co najmniej 8 znaków.';
+            newErrors.password = "Password must be at least 8 characters."
         }
-        // Sprawdzenie zgodności haseł
         if (!passwordConfirmation) {
-            newErrors.passwordConfirmation = 'Potwierdź hasło.';
+            newErrors.passwordConfirmation = "Please confirm your password."
         } else if (password !== passwordConfirmation) {
-            newErrors.passwordConfirmation = 'Hasła nie są zgodne.';
+            newErrors.passwordConfirmation = "Passwords do not match."
         }
 
         if (Object.keys(newErrors).length > 0) {
-            setErrors(newErrors);
-            return;
+            setErrors(newErrors)
+            setIsLoading(false)
+            return
         }
 
-        // 2) Wywołanie API
         try {
-            // Wysyłamy do axios – tam w body: {name, email, password, password_confirmation, role:'trainer'}
-            const data = await registerTrainer(name, email, password, passwordConfirmation);
-
-            // Jeśli serwer zwróci { message: "User registered successfully", ... }
-            setServerSuccess(data.message || 'Rejestracja pomyślna!');
-            // Przenosimy do login (możesz opóźnić, żeby user zobaczył success)
+            const data = await registerTrainer(name, email, password, passwordConfirmation)
+            setServerSuccess(data.message || "Registration successful!")
             setTimeout(() => {
-                navigate('/login');
-            }, 1500);
-
+                navigate("/login")
+            }, 1500)
         } catch (err) {
-            console.error(err);
-
-            // Spróbuj pobrać błąd z serwera:
-            if (err.response && err.response.data && err.response.data.message) {
-                setServerError(err.response.data.message);
+            console.error(err)
+            if (err.response?.data?.message) {
+                setServerError(err.response.data.message)
             } else {
-                setServerError('Błąd rejestracji.');
+                setServerError("Registration failed.")
             }
+            setIsLoading(false)
         }
-    };
+    }
 
     return (
-        <div className="min-h-screen flex items-center justify-center">
-            <form
-                onSubmit={handleSubmit}
-                className="bg-white p-6 rounded shadow w-full max-w-sm"
-            >
-                <h2 className="text-xl font-bold mb-4">Rejestracja trenera</h2>
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-teal-50 to-teal-100 px-4 py-12">
+            <Card className="w-full max-w-md shadow-lg">
+                <CardHeader className="space-y-1">
+                    <div className="mx-auto bg-white p-2 rounded-full w-12 h-12 flex items-center justify-center shadow-sm mb-2">
+                        <Dumbbell className="h-6 w-6 text-teal-600" />
+                    </div>
+                    <CardTitle className="text-2xl font-bold text-center">Trainer Registration</CardTitle>
+                    <CardDescription className="text-center">Create your trainer account</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        {serverSuccess && (
+                            <Alert className="bg-green-50 text-green-700 border-green-200 text-sm py-2">
+                                <AlertDescription>{serverSuccess}</AlertDescription>
+                            </Alert>
+                        )}
+                        {serverError && (
+                            <Alert variant="destructive" className="text-sm py-2">
+                                <AlertDescription>{serverError}</AlertDescription>
+                            </Alert>
+                        )}
 
-                {/* ewentualny success / error z serwera */}
-                {serverSuccess && (
-                    <p className="text-green-600 mb-2">{serverSuccess}</p>
-                )}
-                {serverError && (
-                    <p className="text-red-600 mb-2">{serverError}</p>
-                )}
+                        <div className="space-y-2">
+                            <Label htmlFor="name">Name</Label>
+                            <Input id="name" type="text" value={name} onChange={(e) => setName(e.target.value)} />
+                            {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+                        </div>
 
-                {/* Pole name */}
-                <div className="mb-4">
-                    <label className="block mb-1">Imię</label>
-                    <input
-                        className="border w-full p-2 rounded"
-                        type="text"
-                        value={name}
-                        onChange={(e)=>setName(e.target.value)}
-                    />
-                    {errors.name && (
-                        <p className="text-red-500 text-sm mt-1">
-                            {errors.name}
-                        </p>
-                    )}
-                </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="email">Email</Label>
+                            <Input
+                                id="email"
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="your.email@example.com"
+                            />
+                            {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+                        </div>
 
-                {/* Pole email */}
-                <div className="mb-4">
-                    <label className="block mb-1">Email</label>
-                    <input
-                        className="border w-full p-2 rounded"
-                        type="email"
-                        value={email}
-                        onChange={(e)=>setEmail(e.target.value)}
-                    />
-                    {errors.email && (
-                        <p className="text-red-500 text-sm mt-1">
-                            {errors.email}
-                        </p>
-                    )}
-                </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="password">Password</Label>
+                            <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                            {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
+                        </div>
 
-                {/* Pole password */}
-                <div className="mb-4">
-                    <label className="block mb-1">Hasło</label>
-                    <input
-                        className="border w-full p-2 rounded"
-                        type="password"
-                        value={password}
-                        onChange={(e)=>setPassword(e.target.value)}
-                    />
-                    {errors.password && (
-                        <p className="text-red-500 text-sm mt-1">
-                            {errors.password}
-                        </p>
-                    )}
-                </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="passwordConfirmation">Confirm Password</Label>
+                            <Input
+                                id="passwordConfirmation"
+                                type="password"
+                                value={passwordConfirmation}
+                                onChange={(e) => setPasswordConfirmation(e.target.value)}
+                            />
+                            {errors.passwordConfirmation && (
+                                <p className="text-red-500 text-sm mt-1">{errors.passwordConfirmation}</p>
+                            )}
+                        </div>
 
-                {/* Pole passwordConfirmation */}
-                <div className="mb-4">
-                    <label className="block mb-1">Potwierdź hasło</label>
-                    <input
-                        className="border w-full p-2 rounded"
-                        type="password"
-                        value={passwordConfirmation}
-                        onChange={(e)=>setPasswordConfirmation(e.target.value)}
-                    />
-                    {errors.passwordConfirmation && (
-                        <p className="text-red-500 text-sm mt-1">
-                            {errors.passwordConfirmation}
-                        </p>
-                    )}
-                </div>
-
-                <button
-                    type="submit"
-                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                >
-                    Zarejestruj
-                </button>
-            </form>
+                        <Button
+                            type="submit"
+                            className="w-full bg-teal-600 hover:bg-teal-700"
+                            disabled={isLoading || serverSuccess}
+                        >
+                            {isLoading ? "Registering..." : "Register"}
+                            <UserPlus className="ml-2 h-4 w-4" />
+                        </Button>
+                    </form>
+                </CardContent>
+                <CardFooter>
+                    <Button variant="ghost" className="w-full" onClick={() => navigate("/login")}>
+                        <ArrowLeft className="mr-2 h-4 w-4" />
+                        Back to Login
+                    </Button>
+                </CardFooter>
+            </Card>
         </div>
-    );
+    )
 }
 
-export default Register;
+export default Register
