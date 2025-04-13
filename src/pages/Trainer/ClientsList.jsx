@@ -1,3 +1,5 @@
+"use client"
+
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { getClients, deleteClient } from "../../api/axios"
@@ -15,7 +17,6 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
 import {
     MoreHorizontal,
     Search,
@@ -101,7 +102,7 @@ function ClientsList() {
         return (
             client.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             client.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            client.role?.toLowerCase().includes(searchTerm.toLowerCase())
+            client.phone?.toLowerCase().includes(searchTerm.toLowerCase())
         )
     })
 
@@ -115,8 +116,10 @@ function ClientsList() {
             return sortDirection === "asc" ? a.email.localeCompare(b.email) : b.email.localeCompare(a.email)
         }
 
-        if (sortColumn === "role") {
-            return sortDirection === "asc" ? a.role.localeCompare(b.role) : b.role.localeCompare(a.role)
+        if (sortColumn === "phone") {
+            const phoneA = a.phone || ""
+            const phoneB = b.phone || ""
+            return sortDirection === "asc" ? phoneA.localeCompare(phoneB) : phoneB.localeCompare(phoneA)
         }
 
         return 0
@@ -206,11 +209,11 @@ function ClientsList() {
                                             </TableHead>
                                             <TableHead
                                                 className="cursor-pointer hover:bg-muted/50 transition-colors"
-                                                onClick={() => handleSort("role")}
+                                                onClick={() => handleSort("phone")}
                                             >
                                                 <div className="flex items-center">
-                                                    Role
-                                                    {sortColumn === "role" &&
+                                                    Phone
+                                                    {sortColumn === "phone" &&
                                                         (sortDirection === "asc" ? (
                                                             <ChevronUp className="ml-1 h-4 w-4" />
                                                         ) : (
@@ -226,11 +229,7 @@ function ClientsList() {
                                             <TableRow key={client.id} className="hover:bg-muted/50 transition-colors">
                                                 <TableCell className="font-medium">{client.name}</TableCell>
                                                 <TableCell>{client.email}</TableCell>
-                                                <TableCell>
-                                                    <Badge variant="outline" className="bg-teal-50">
-                                                        {client.role || "Client"}
-                                                    </Badge>
-                                                </TableCell>
+                                                <TableCell>{client.phone || "-"}</TableCell>
                                                 <TableCell>
                                                     <DropdownMenu>
                                                         <DropdownMenuTrigger asChild>

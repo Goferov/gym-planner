@@ -1,3 +1,5 @@
+"use client"
+
 import { useState, useEffect } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { createClient, getClient, updateClient } from "../../api/axios"
@@ -5,9 +7,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { ArrowLeft, Save } from "lucide-react"
+import { ArrowLeft, Save, Eye, EyeOff, RefreshCw } from "lucide-react"
 
 function ClientForm() {
     const { id } = useParams()
@@ -17,7 +18,7 @@ function ClientForm() {
     const [formData, setFormData] = useState({
         name: "",
         email: "",
-        role: "client", // Default role
+        password: "",
         phone: "",
         address: "",
         notes: "",
@@ -27,6 +28,7 @@ function ClientForm() {
     const [serverError, setServerError] = useState("")
     const [loading, setLoading] = useState(false)
     const [initialLoading, setInitialLoading] = useState(isEditMode)
+    const [showPassword, setShowPassword] = useState(false)
 
     useEffect(() => {
         if (isEditMode) {
@@ -43,7 +45,7 @@ function ClientForm() {
             setFormData({
                 name: clientData.name || "",
                 email: clientData.email || "",
-                role: clientData.role || "client",
+                password: "", // Password is not returned from the API
                 phone: clientData.phone || "",
                 address: clientData.address || "",
                 notes: clientData.notes || "",
@@ -66,13 +68,27 @@ function ClientForm() {
         }
     }
 
-    const handleSelectChange = (name, value) => {
-        setFormData((prev) => ({ ...prev, [name]: value }))
+    const generateRandomPassword = () => {
+        // Generate a random password with letters, numbers, and special characters
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*"
+        let password = ""
 
-        // Clear error when field is edited
-        if (errors[name]) {
-            setErrors((prev) => ({ ...prev, [name]: undefined }))
+        // Ensure at least 8 characters
+        for (let i = 0; i < 12; i++) {
+            password += chars.charAt(Math.floor(Math.random() * chars.length))
         }
+
+        setFormData((prev) => ({ ...prev, password }))
+        setShowPassword(true) // Show the password when generated
+
+        // Clear password error if any
+        if (errors.password) {
+            setErrors((prev) => ({ ...prev, password: undefined }))
+        }
+    }
+
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword)
     }
 
     const validateForm = () => {
@@ -80,6 +96,8 @@ function ClientForm() {
 
         if (!formData.name.trim()) {
             newErrors.name = "Name is required"
+        } else if (formData.name.length > 255) {
+            newErrors.name = "Name must be less than 255 characters"
         }
 
         if (!formData.email.trim()) {
@@ -88,8 +106,13 @@ function ClientForm() {
             newErrors.email = "Please enter a valid email address"
         }
 
-        if (!formData.role) {
-            newErrors.role = "Role is required"
+        // Only validate password for new clients or if password is provided for existing clients
+        if (!isEditMode || formData.password) {
+            if (!isEditMode && !formData.password) {
+                newErrors.password = "Password is required"
+            } else if (formData.password && formData.password.length < 8) {
+                newErrors.password = "Password must be at least 8 characters"
+            }
         }
 
         setErrors(newErrors)
@@ -107,10 +130,15 @@ function ClientForm() {
         try {
             setLoading(true)
 
+            const dataToSubmit = { ...formData }
+            if (isEditMode && !dataToSubmit.password) {
+                delete dataToSubmit.password
+            }
+
             if (isEditMode) {
-                await updateClient(id, formData)
+                await updateClient(id, dataToSubmit)
             } else {
-                await createClient(formData)
+                await createClient(dataToSubmit)
             }
 
             navigate("/trainer/clients")
@@ -197,20 +225,47 @@ function ClientForm() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="role">
-                                Role <span className="text-red-500">*</span>
-                            </Label>
-                            <Select value={formData.role} onValueChange={(value) => handleSelectChange("role", value)}>
-                                <SelectTrigger id="role" className="w-full">
-                                    <SelectValue placeholder="Select a role" />
-                                </SelectTrigger>
-                                <SelectContent className="bg-white border shadow-md">
-                                    <SelectItem value="client">Client</SelectItem>
-                                    <SelectItem value="premium">Premium Client</SelectItem>
-                                    <SelectItem value="vip">VIP Client</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            {errors.role && <p className="text-sm text-red-500">{errors.role}</p>}
+                            <div className="flex justify-between items-center">
+                                <Label htmlFor="password">Password {!isEditMode && <span className="text-red-500">*</span>}</Label>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={generateRandomPassword}
+                                    className="text-xs h-7 px-2 hover:bg-muted transition-colors"
+                                >
+                                    <RefreshCw className="h-3 w-3 mr-1" />
+                                    Generate Password
+                                </Button>
+                            </div>
+                            <div className="relative">
+                                <Input
+                                    id="password"
+                                    name="password"
+                                    type={showPassword ? "text" : "password"}
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    placeholder={isEditMode ? "Leave blank to keep current password" : "Minimum 8 characters"}
+                                />
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={togglePasswordVisibility}
+                                    className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 p-0"
+                                >
+                                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                    <span className="sr-only">{showPassword ? "Hide password" : "Show password"}</span>
+                                </Button>
+                            </div>
+                            {errors.password && <p className="text-sm text-red-500">{errors.password}</p>}
+                            {formData.password && (
+                                <p className="text-xs text-muted-foreground">
+                                    {formData.password.length < 8
+                                        ? `Password must be at least 8 characters (currently ${formData.password.length})`
+                                        : "Password meets minimum requirements"}
+                                </p>
+                            )}
                         </div>
 
                         <div className="space-y-2">
