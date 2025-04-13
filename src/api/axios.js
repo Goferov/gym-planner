@@ -83,3 +83,35 @@ export async function deleteExercise(id) {
 export async function muscleGroups() {
     return await api.get(`/muscle-groups`);
 }
+
+// ========== Clients endpoints ==========
+
+
+export async function getClients() {
+    // W "ClientController@index" zwraca collection: data: [...]
+    const { data } = await api.get('/clients');
+    return data; // np. { data: [ {id, name, email, role, trainer_id}, ... ] }
+}
+
+
+export async function createClient(clientData) {
+    const { data } = await api.post('/clients', clientData);
+    return data;
+}
+
+
+export async function getClient(clientId) {
+    const { data } = await api.get(`/clients/${clientId}`);
+    return data; // np. { data: {...} }
+}
+
+
+export async function updateClient(clientId, clientData) {
+    const { data } = await api.put(`/clients/${clientId}`, clientData);
+    return data; // np. { data: {...} }
+}
+
+
+export async function deleteClient(clientId) {
+    return await api.delete(`/clients/${clientId}`); // {status: 204, ...}
+}

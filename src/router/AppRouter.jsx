@@ -13,6 +13,8 @@ import ExercisesList from '../pages/Trainer/ExercisesList';
 import PublicRoute from './PublicRoute';
 import ProtectedRoute from './ProtectedRoute';
 import ExerciseForm from "@/pages/Trainer/ExercisesForm.jsx";
+import ClientsList from "@/pages/Trainer/ClientsList.jsx";
+import ClientForm from "@/pages/Trainer/ClientsForm.jsx";
 
 function AppRouter() {
     return (
@@ -55,6 +57,10 @@ function AppRouter() {
                     <Route path="exercises" element={<ExercisesList />} />
                     <Route path="exercises/add" element={<ExerciseForm />} />
                     <Route path="exercises/add/:id" element={<ExerciseForm />} />
+
+                    <Route path="clients" element={<ClientsList />} />
+                    <Route path="clients/add" element={<ClientForm />} />
+                    <Route path="clients/add/:id" element={<ClientForm />} />
                 </Route>
 
                 <Route path="*" element={<div>404 - Not Found</div>} />
