@@ -15,6 +15,7 @@ import ProtectedRoute from './ProtectedRoute';
 import ExerciseForm from "@/pages/Trainer/ExercisesForm.jsx";
 import ClientsList from "@/pages/Trainer/ClientsList.jsx";
 import ClientForm from "@/pages/Trainer/ClientsForm.jsx";
+import PlansList from "@/pages/Trainer/PlansList.jsx";
 
 function AppRouter() {
     return (
@@ -59,6 +60,10 @@ function AppRouter() {
                     <Route path="exercises/add/:id" element={<ExerciseForm />} />
 
                     <Route path="clients" element={<ClientsList />} />
+                    <Route path="clients/add" element={<ClientForm />} />
+                    <Route path="clients/add/:id" element={<ClientForm />} />
+
+                    <Route path="plans" element={<PlansList />} />
                     <Route path="clients/add" element={<ClientForm />} />
                     <Route path="clients/add/:id" element={<ClientForm />} />
                 </Route>

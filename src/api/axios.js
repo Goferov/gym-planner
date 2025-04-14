@@ -115,3 +115,100 @@ export async function updateClient(clientId, clientData) {
 export async function deleteClient(clientId) {
     return await api.delete(`/clients/${clientId}`); // {status: 204, ...}
 }
+
+// ========== PLANS endpoints ==========
+
+export async function getPlans() {
+    const { data } = await api.get('/plans');
+    return data;
+}
+
+/**
+ *
+ * @param {Object} planData
+ *    {
+ *      name: string,
+ *      description?: string,
+ *      duration_weeks?: number,
+ *      plan_days: [
+ *        {
+ *          week_number: number,
+ *          day_number: number,
+ *          description?: string,
+ *          exercises: [
+ *            {
+ *              exercise_id: number,
+ *              sets?: number,
+ *              reps?: number,
+ *              rest_time?: number,
+ *              tempo?: string,
+ *              notes?: string
+ *            },
+ *            ...
+ *          ]
+ *        },
+ *        ...
+ *      ]
+ *    }
+ *
+ */
+export async function createPlan(planData) {
+    const { data } = await api.post('/plans', planData);
+    return data;
+}
+
+export async function getPlan(planId) {
+    const { data } = await api.get(`/plans/${planId}`);
+    return data; // { data: {...} }
+}
+
+/**
+ * Aktualizuje istniejący plan (PUT /plans/:id).
+ * planData musi zawierać name, duration_weeks, plan_days (pełny stan).
+ * Zwraca zaktualizowany plan.
+ */
+export async function updatePlan(planId, planData) {
+    const { data } = await api.put(`/plans/${planId}`, planData);
+    return data;
+}
+
+/**
+ * Usuwa plan (DELETE /plans/:id).
+ * Zwraca status 204 (no content) przy sukcesie.
+ */
+export async function deletePlan(planId) {
+    const response = await api.delete(`/plans/${planId}`);
+    return response; // {status: 204,...}
+}
+
+/**
+ * Przypisuje plan do wielu użytkowników (POST /plans/:id/assign).
+ * body:
+ *  {
+ *    user_ids: number[];
+ *  }
+ * Zwraca { message: "Plan assigned to users successfully" } (status 201).
+ */
+export async function assignPlan(planId, userIds) {
+    const { data } = await api.post(`/plans/${planId}/assign`, {
+        user_ids: userIds,
+    });
+    return data;
+}
+
+/**
+ * Usuwa przypisanie planu u wskazanych userów (DELETE /plans/:id/unassign).
+ * W laravel unassignPlan przyjmuje tablicę user_ids w body.
+ * Również plan-> clients()->updateExistingPivot(... active: false).
+ * Zwraca { message: "..."} status 200
+ *
+ * UWAGA: w axios, by dodać body do DELETE, używamy:
+ *   { data: { user_ids: [ ... ] } }
+ */
+export async function unassignPlan(planId, userIds) {
+    // w laravel definicja: DELETE /plans/{plan}/unassign, w body user_ids
+    const response = await api.delete(`/plans/${planId}/unassign`, {
+        data: { user_ids: userIds }
+    });
+    return response.data; // np. {message: "..."} status 200
+}
