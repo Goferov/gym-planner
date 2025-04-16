@@ -1,3 +1,5 @@
+"use client"
+
 import type React from "react"
 
 import { useState, useEffect } from "react"
@@ -26,6 +28,7 @@ import {
     Calendar,
     CalendarDays,
     Check,
+    Copy,
 } from "lucide-react"
 import { toast } from "sonner"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -171,7 +174,7 @@ function PlanForm() {
                 duration_weeks: data.duration_weeks || 1,
                 plan_days: data.plan_days || [],
             })
-            console.log(data);
+            console.log(data)
 
             // Set selected clients
             if (data.clients) {
@@ -301,7 +304,7 @@ function PlanForm() {
         exerciseIndex: number,
         field: keyof ExerciseInPlan,
         value: any,
-) => {
+    ) => {
         setPlan((prev) => {
             const updatedDays = prev.plan_days.map((day) => {
                 if (day.week_number === weekNumber && day.day_number === dayNumber) {
@@ -394,7 +397,7 @@ function PlanForm() {
                 plan_days: plan.plan_days.filter((day) => day.exercises.length > 0 || day.description),
             }
 
-            console.log(planData);
+            console.log(planData)
 
             let savedPlan
 
@@ -488,6 +491,33 @@ function PlanForm() {
     // Get selected clients
     const getSelectedClients = () => {
         return clients.filter((client) => selectedClientIds.includes(client.id))
+    }
+
+    // Add a new function to handle copying a week
+    const handleCopyWeek = (weekNumber: number) => {
+        // Get all days from the week to copy
+        const daysToCopy = plan.plan_days.filter((day) => day.week_number === weekNumber)
+
+        // Create new week number
+        const newWeekNumber = plan.duration_weeks + 1
+
+        // Create deep copies of the days with the new week number
+        const newDays = daysToCopy.map((day) => ({
+            ...day,
+            week_number: newWeekNumber,
+            exercises: day.exercises.map((exercise) => ({ ...exercise })), // Deep copy exercises
+        }))
+
+        setPlan((prev) => ({
+            ...prev,
+            duration_weeks: newWeekNumber,
+            plan_days: [...prev.plan_days, ...newDays],
+        }))
+
+        // Expand the newly added week
+        setExpandedWeeks((prev) => [...prev, newWeekNumber - 1])
+
+        toast.success(`Week ${weekNumber} copied successfully`)
     }
 
     if (initialLoading) {
@@ -607,6 +637,18 @@ function PlanForm() {
                                         <h3 className="text-lg font-medium">Week {weekNumber}</h3>
                                     </div>
                                     <div className="flex items-center gap-2">
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={(e) => {
+                                                e.stopPropagation()
+                                                handleCopyWeek(weekNumber)
+                                            }}
+                                            className="h-8 text-teal-500 hover:text-teal-700 hover:bg-teal-50 mr-2"
+                                        >
+                                            <Copy className="h-4 w-4" />
+                                            <span className="sr-only">Copy Week</span>
+                                        </Button>
                                         {plan.duration_weeks > 1 && (
                                             <Button
                                                 variant="outline"
