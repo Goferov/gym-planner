@@ -7,7 +7,7 @@ import Login from '../pages/Auth/Login';
 import Register from '../pages/Auth/Register';
 
 import TrainerLayout from '../pages/Trainer/TrainerLayout';
-import TrainerDashboard from '../pages/Trainer/TrainerDashboard';
+import TrainerDashboard from '../pages/Trainer/TrainerDashboard.js';
 import ExercisesList from '../pages/Trainer/ExercisesList';
 
 import PublicRoute from './PublicRoute';

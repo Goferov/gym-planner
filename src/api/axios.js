@@ -212,3 +212,9 @@ export async function unassignPlan(planId, userIds) {
     });
     return response.data; // np. {message: "..."} status 200
 }
+
+
+export async function getMetrics()      { return (await api.get('/dashboard/metrics')).data; }
+export async function getPerformance(d) { return (await api.get('/dashboard/performance', { params:{ days:d } })).data; }
+export async function getRecentClients(l=5) { return (await api.get('/dashboard/recent-clients', { params:{ limit:l } })).data; }
+export async function getRecentActivity(l=20){ return (await api.get('/dashboard/activity', { params:{ limit:l } })).data; }
