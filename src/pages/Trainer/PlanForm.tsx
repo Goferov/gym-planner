@@ -2,7 +2,7 @@ import type React from "react"
 
 import { useState, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
-import { createPlan, getPlan, updatePlan, getExercises, getClients, assignPlan } from "../../api/axios"
+import { createPlan, getPlan, updatePlan, getExercises, getClients, assignPlan, unassignPlan } from "../../api/axios"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -96,6 +96,7 @@ function PlanForm() {
     const [clients, setClients] = useState<Client[]>([])
     const [selectedClientIds, setSelectedClientIds] = useState<number[]>([])
     const [clientSearchTerm, setClientSearchTerm] = useState("")
+    const [previouslyAssignedClientIds, setPreviouslyAssignedClientIds] = useState<number[]>([])
     const [clientsModalOpen, setClientsModalOpen] = useState(false)
     const [assigningClients, setAssigningClients] = useState(false)
     const [saveSuccess, setSaveSuccess] = useState(false)
@@ -175,6 +176,7 @@ function PlanForm() {
             // Set selected clients
             if (data.clients) {
                 setSelectedClientIds(data.clients.map((client: any) => client.id))
+                setPreviouslyAssignedClientIds(data.clients.map((client: any) => client.id))
             }
 
             // Expand all weeks by default in edit mode
@@ -402,10 +404,33 @@ function PlanForm() {
                 savedPlan = await createPlan(planData)
             }
 
-            let savedPlanId = savedPlan.data.id;
+            const savedPlanId = isEditMode ? id : savedPlan.data.id
             // Assign clients if any are selected
-            if (selectedClientIds.length > 0 && savedPlanId) {
-                await assignPlan(savedPlanId, selectedClientIds)
+            if (savedPlanId) {
+                // Find clients to assign (newly selected)
+                const clientsToAssign = selectedClientIds.filter(
+                    (id) =>
+                        !previouslyAssignedClientIds.includes(id) ||
+                        // Also include previously inactive clients that are now selected
+                        (previouslyAssignedClientIds.includes(id) && clients.find((c) => c.id === id)?.active === false),
+                )
+
+                // Find clients to unassign (previously active but now unselected)
+                const clientsToUnassign = previouslyAssignedClientIds.filter(
+                    (id) => !selectedClientIds.includes(id) && clients.find((c) => c.id === id)?.active !== false,
+                )
+
+                // Perform assign and unassign operations
+                if (clientsToAssign.length > 0) {
+                    await assignPlan(savedPlanId, clientsToAssign)
+                }
+
+                if (clientsToUnassign.length > 0) {
+                    await unassignPlan(savedPlanId, clientsToUnassign)
+                }
+
+                // Update the previously assigned clients list
+                setPreviouslyAssignedClientIds([...previouslyAssignedClientIds, ...clientsToAssign])
             }
 
             setSaveSuccess(true)
