@@ -159,7 +159,7 @@ export async function createPlan(planData) {
 
 export async function getPlan(planId) {
     const { data } = await api.get(`/plans/${planId}`);
-    return data; // { data: {...} }
+    return data.data; // { data: {...} }
 }
 
 /**

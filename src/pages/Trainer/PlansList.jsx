@@ -406,7 +406,7 @@ function PlansList() {
                                                         </DropdownMenuTrigger>
                                                         <DropdownMenuContent align="end" className="bg-white border shadow-md">
                                                             <DropdownMenuItem
-                                                                onClick={() => navigate(`/trainer/plans/edit/${plan.id}`)}
+                                                                onClick={() => navigate(`/trainer/plans/add/${plan.id}`)}
                                                                 className="hover:bg-muted transition-colors"
                                                             >
                                                                 <Edit className="mr-2 h-4 w-4" />

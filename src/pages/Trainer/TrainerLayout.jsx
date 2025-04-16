@@ -37,8 +37,8 @@ function TrainerLayout() {
     const NavItems = () => (
         <>
             {navigation.map((item) => {
-                console.log(location.pathname);
-                console.log(`/trainer/${item.href ? item.href : '/'}`);
+                // console.log(location.pathname);
+                // console.log(`/trainer/${item.href ? item.href : '/'}`);
                 const isActive = location.pathname === `/trainer${item.href ? '/' + item.href : ''}`
                 return (
                     <Link

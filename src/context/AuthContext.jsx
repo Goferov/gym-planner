@@ -13,7 +13,6 @@ export function AuthProvider({ children }) {
             if (token) {
                 try {
                     const user = await getMe();
-                    console.log(user);
                     setUser(user);
                 } catch (error) {
                     console.error('Błąd pobierania usera', error);
