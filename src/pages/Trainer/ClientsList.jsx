@@ -1,3 +1,5 @@
+"use client"
+
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { getClients, deleteClient } from "../../api/axios"
@@ -27,6 +29,7 @@ import {
     UserPlus,
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { parseISO, formatDistanceToNow } from "date-fns"
 
 function ClientsList() {
     const [clients, setClients] = useState([])
@@ -83,6 +86,16 @@ function ClientsList() {
         setDeleteDialogOpen(true)
     }
 
+    // Format relative time for display
+    const formatRelativeTime = (dateString) => {
+        if (!dateString) return "Never"
+        try {
+            return formatDistanceToNow(parseISO(dateString), { addSuffix: true })
+        } catch (e) {
+            return "Unknown"
+        }
+    }
+
     // Handle sorting
     function handleSort(column) {
         if (sortColumn === column) {
@@ -118,6 +131,12 @@ function ClientsList() {
             const phoneA = a.phone || ""
             const phoneB = b.phone || ""
             return sortDirection === "asc" ? phoneA.localeCompare(phoneB) : phoneB.localeCompare(phoneA)
+        }
+
+        if (sortColumn === "last_login_at") {
+            const dateA = a.last_login_at ? new Date(a.last_login_at) : new Date(0)
+            const dateB = b.last_login_at ? new Date(b.last_login_at) : new Date(0)
+            return sortDirection === "asc" ? dateA - dateB : dateB - dateA
         }
 
         return 0
@@ -219,6 +238,20 @@ function ClientsList() {
                                                         ))}
                                                 </div>
                                             </TableHead>
+                                            <TableHead
+                                                className="cursor-pointer hover:bg-muted/50 transition-colors"
+                                                onClick={() => handleSort("last_login_at")}
+                                            >
+                                                <div className="flex items-center">
+                                                    Last Login
+                                                    {sortColumn === "last_login_at" &&
+                                                        (sortDirection === "asc" ? (
+                                                            <ChevronUp className="ml-1 h-4 w-4" />
+                                                        ) : (
+                                                            <ChevronDown className="ml-1 h-4 w-4" />
+                                                        ))}
+                                                </div>
+                                            </TableHead>
                                             <TableHead className="w-[100px]">Actions</TableHead>
                                         </TableRow>
                                     </TableHeader>
@@ -228,6 +261,9 @@ function ClientsList() {
                                                 <TableCell className="font-medium">{client.name}</TableCell>
                                                 <TableCell>{client.email}</TableCell>
                                                 <TableCell>{client.phone || "-"}</TableCell>
+                                                <TableCell>
+                                                    {client.last_login_at ? formatRelativeTime(client.last_login_at) : "Never"}
+                                                </TableCell>
                                                 <TableCell>
                                                     <DropdownMenu>
                                                         <DropdownMenuTrigger asChild>
