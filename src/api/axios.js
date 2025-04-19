@@ -213,6 +213,21 @@ export async function unassignPlan(planId, userIds) {
     return response.data; // np. {message: "..."} status 200
 }
 
+/** Pełna historia wykonania planu (tygodnie/dni/logi) */
+export async function getPlanHistory(planUserId) {
+    const { data } = await api.get(`/plan-user/${planUserId}/history`);
+    return data; // PlanUserHistoryResource
+}
+
+/** Pobierz wszystkie przypisane plany klienta.
+ *  params = { active: 0|1 } // domyślnie 1 (=tylko aktywne)
+ */
+export async function getAssignedPlans(params = { active: 1 }) {
+    const { data } = await api.get('/plan-user', { params });
+    return data; // Array AssignedPlanResource
+}
+
+
 
 export async function getMetrics()      { return (await api.get('/dashboard/metrics')).data; }
 export async function getPerformance(d) { return (await api.get('/dashboard/performance', { params:{ days:d } })).data; }

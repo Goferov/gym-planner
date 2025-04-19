@@ -17,6 +17,7 @@ import ClientsList from "@/pages/Trainer/ClientsList.jsx";
 import ClientForm from "@/pages/Trainer/ClientsForm.jsx";
 import PlansList from "@/pages/Trainer/PlansList.jsx";
 import PlanForm from "@/pages/Trainer/PlanForm.js";
+import ClientPlanHistory from "@/pages/Trainer/ClientPlanHistory.js";
 
 function AppRouter() {
     return (
@@ -63,6 +64,7 @@ function AppRouter() {
                     <Route path="clients" element={<ClientsList />} />
                     <Route path="clients/add" element={<ClientForm />} />
                     <Route path="clients/add/:id" element={<ClientForm />} />
+                    <Route path="clients/history/:clientId" element={<ClientPlanHistory />} />
 
                     <Route path="plans" element={<PlansList />} />
                     <Route path="plans/add" element={<PlanForm />} />

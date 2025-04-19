@@ -1,5 +1,3 @@
-"use client"
-
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { getClients, deleteClient } from "../../api/axios"
@@ -27,6 +25,7 @@ import {
     ChevronLeft,
     ChevronRight,
     UserPlus,
+    History,
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { parseISO, formatDistanceToNow } from "date-fns"
@@ -252,7 +251,7 @@ function ClientsList() {
                                                         ))}
                                                 </div>
                                             </TableHead>
-                                            <TableHead className="w-[100px]">Actions</TableHead>
+                                            <TableHead className="w-[150px]">Actions</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
@@ -265,30 +264,41 @@ function ClientsList() {
                                                     {client.last_login_at ? formatRelativeTime(client.last_login_at) : "Never"}
                                                 </TableCell>
                                                 <TableCell>
-                                                    <DropdownMenu>
-                                                        <DropdownMenuTrigger asChild>
-                                                            <Button variant="ghost" className="h-8 w-8 p-0 hover:bg-muted transition-colors">
-                                                                <span className="sr-only">Open menu</span>
-                                                                <MoreHorizontal className="h-4 w-4" />
-                                                            </Button>
-                                                        </DropdownMenuTrigger>
-                                                        <DropdownMenuContent align="end" className="bg-white border shadow-md">
-                                                            <DropdownMenuItem
-                                                                onClick={() => navigate(`/trainer/clients/add/${client.id}`)}
-                                                                className="hover:bg-muted transition-colors"
-                                                            >
-                                                                <Edit className="mr-2 h-4 w-4" />
-                                                                Edit
-                                                            </DropdownMenuItem>
-                                                            <DropdownMenuItem
-                                                                className="text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors"
-                                                                onClick={() => confirmDelete(client)}
-                                                            >
-                                                                <Trash2 className="mr-2 h-4 w-4" />
-                                                                Delete
-                                                            </DropdownMenuItem>
-                                                        </DropdownMenuContent>
-                                                    </DropdownMenu>
+                                                    <div className="flex items-center gap-2">
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            onClick={() => navigate(`/trainer/clients/history/${client.id}`)}
+                                                            className="h-8 text-xs"
+                                                        >
+                                                            <History className="h-3.5 w-3.5 mr-1" />
+                                                            Plan History
+                                                        </Button>
+                                                        <DropdownMenu>
+                                                            <DropdownMenuTrigger asChild>
+                                                                <Button variant="ghost" className="h-8 w-8 p-0 hover:bg-muted transition-colors">
+                                                                    <span className="sr-only">Open menu</span>
+                                                                    <MoreHorizontal className="h-4 w-4" />
+                                                                </Button>
+                                                            </DropdownMenuTrigger>
+                                                            <DropdownMenuContent align="end" className="bg-white border shadow-md">
+                                                                <DropdownMenuItem
+                                                                    onClick={() => navigate(`/trainer/clients/add/${client.id}`)}
+                                                                    className="hover:bg-muted transition-colors"
+                                                                >
+                                                                    <Edit className="mr-2 h-4 w-4" />
+                                                                    Edit
+                                                                </DropdownMenuItem>
+                                                                <DropdownMenuItem
+                                                                    className="text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors"
+                                                                    onClick={() => confirmDelete(client)}
+                                                                >
+                                                                    <Trash2 className="mr-2 h-4 w-4" />
+                                                                    Delete
+                                                                </DropdownMenuItem>
+                                                            </DropdownMenuContent>
+                                                        </DropdownMenu>
+                                                    </div>
                                                 </TableCell>
                                             </TableRow>
                                         ))}
