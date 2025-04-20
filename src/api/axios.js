@@ -233,3 +233,17 @@ export async function getMetrics()      { return (await api.get('/dashboard/metr
 export async function getPerformance(d) { return (await api.get('/dashboard/performance', { params:{ days:d } })).data; }
 export async function getRecentClients(l=5) { return (await api.get('/dashboard/recent-clients', { params:{ limit:l } })).data; }
 export async function getRecentActivity(l=20){ return (await api.get('/dashboard/activity', { params:{ limit:l } })).data; }
+
+export async function updateMyProfile(payload) {
+    const { data } = await api.put('/me/profile', payload);
+    return data;
+}
+
+export async function changeMyPassword(current, newPass, confirm) {
+    const { data } = await api.put('/me/password', {
+        current_password: current,
+        new_password: newPass,
+        new_password_confirmation: confirm,
+    });
+    return data;
+}

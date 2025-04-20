@@ -18,6 +18,7 @@ import ClientForm from "@/pages/Trainer/ClientsForm.jsx";
 import PlansList from "@/pages/Trainer/PlansList.jsx";
 import PlanForm from "@/pages/Trainer/PlanForm.js";
 import ClientPlanHistory from "@/pages/Trainer/ClientPlanHistory.js";
+import Settings from "@/pages/Auth/Settings.jsx";
 
 function AppRouter() {
     return (
@@ -69,6 +70,8 @@ function AppRouter() {
                     <Route path="plans" element={<PlansList />} />
                     <Route path="plans/add" element={<PlanForm />} />
                     <Route path="plans/add/:id" element={<PlanForm />} />
+
+                    <Route path="settings" element={<Settings />} />
                 </Route>
 
                 <Route path="*" element={<div>404 - Not Found</div>} />
