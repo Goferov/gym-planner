@@ -25,13 +25,11 @@ import PublicRoute from './PublicRoute';
 import ProtectedRoute from './ProtectedRoute';
 import ClientDashboard from "@/pages/Client/ClientDashboard.jsx";
 import ClientPlans from "@/pages/Client/ClientPlans.jsx";
-import PlanDetails from "@/pages/Client/Workout.jsx";
+import PlanDetails from "@/pages/Client/PlanDetails.jsx";
 import Workout from "@/pages/Client/Workout.jsx";
 import ClientLayout from "@/pages/Client/ClientLayout.jsx";
+import ClientSettings from "@/pages/Client/ClientSettings.jsx";
 
-function ClientSettings() {
-    return null;
-}
 
 function AppRouter() {
     return (
@@ -74,7 +72,7 @@ function AppRouter() {
                     <Route path="plans" element={<ClientPlans />} />
                     <Route path="plan-details/:planId" element={<PlanDetails />} />
                     <Route path="workout/:planId" element={<Workout />} />
-                    <Route path="history" element={<History />} />
+                    <Route path="history" element={<ClientPlanHistory />} />
                     <Route path="settings" element={<ClientSettings />} />
                 </Route>
 
