@@ -11,7 +11,7 @@ function PublicRoute({ children }) {
     const { user } = useContext(AuthContext);
 
     if (user) {
-        return <Navigate to="/trainer" replace />;
+        return <Navigate to={user.role === 'trainer' ? '/trainer' : '/client'} replace />;
     }
     return children;
 }

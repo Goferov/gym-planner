@@ -247,3 +247,93 @@ export async function changeMyPassword(current, newPass, confirm) {
     });
     return data;
 }
+
+/* -------------------------------------------------
+   PLAN-USER  (lista przypisań, start planu, historia)
+---------------------------------------------------*/
+
+/** GET /plan-user         – lista przypisanych planów
+ *  – Jeśli trener poda ?user_id=X, backend zwróci plany tego klienta
+ *  – params = { active:1|0, user_id: 7 }
+ */
+export async function fetchPlanUsers(params = {}) {
+    const { data } = await api.get('/plan-user', { params });
+    return data;                               // AssignedPlanResource[]
+}
+
+/** POST /plan-user/{id}/start – rozpocznij plan */
+export async function startPlan(planUserId) {
+    const { data } = await api.post(`/plan-user/${planUserId}/start`);
+    return data;                               // { message: 'Plan started' }
+}
+
+/** GET /plan-user/{id} – podstawowe info + progress */
+export async function fetchPlanUser(planUserId) {
+    const { data } = await api.get(`/plan-user/${planUserId}`);
+    return data;                               // PlanUserResource
+}
+
+/** GET /plan-user/{id}/history – pełna historia */
+export async function fetchPlanUserHistory(planUserId) {
+    const { data } = await api.get(`/plan-user/${planUserId}/history`);
+    return data;                               // PlanUserHistoryResource
+}
+
+/* -------------------------------------------------
+   DZIEŃ PLANU  (dzisiejszy lub dowolny)
+---------------------------------------------------*/
+
+/** GET /plan-user/{id}/day?date=YYYY-MM-DD
+ *    Jeśli date pominięte → dziś
+ */
+export async function fetchPlanDay(planUserId, date = null) {
+    const params = date ? { date } : {};
+    const { data } = await api.get(`/plan-user/${planUserId}/day`, { params });
+    return data;
+}
+
+/** POST /plan-user/{id}/day/start  – generuje logi na dziś
+ *    body może opcjonalnie zawierać { date:'YYYY-MM-DD' }
+ */
+export async function startPlanDay(planUserId, date = null) {
+    const body = date ? { date } : {};
+    const { data } = await api.post(`/plan-user/${planUserId}/day/start`, body);
+    return data;                               // zwraca taki sam payload jak fetchPlanDay
+}
+
+/** GET /plan-user/{id}/day/summary */
+export async function fetchPlanDaySummary(planUserId, date = null) {
+    const params = date ? { date } : {};
+    const { data } = await api.get(
+        `/plan-user/${planUserId}/day/summary`,
+        { params }
+    );
+    return data;                               // { progress, total, done, ... }
+}
+
+/* -------------------------------------------------
+   LOGI ĆWICZEŃ
+---------------------------------------------------*/
+
+/** POST /exercise-logs/{logId}/mark-complete
+ *    completed = true by default
+ */
+export async function markExerciseComplete(logId, completed = true) {
+    const { data } = await api.post(
+        `/exercise-logs/${logId}/mark-complete`,
+        { completed }
+    );
+    return data;                               // { message, exercise_log }
+}
+
+/** POST /exercise-logs/{logId}/report-difficulty (1-5 + komentarz) */
+export async function reportExerciseDifficulty(logId, difficulty, comment = '') {
+    const { data } = await api.post(
+        `/exercise-logs/${logId}/report-difficulty`,
+        {
+            difficulty_reported: difficulty,
+            difficulty_comment: comment,
+        }
+    );
+    return data;                               // { message, exercise_log }
+}
