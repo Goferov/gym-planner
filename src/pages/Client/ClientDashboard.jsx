@@ -85,25 +85,28 @@ function ClientDashboard() {
     if (loading) {
         return (
             <div className="space-y-6">
-                <Skeleton className="h-12 w-3/4" />
-                <Skeleton className="h-[200px] w-full rounded-lg" />
-                <Skeleton className="h-[100px] w-full rounded-lg" />
+                <Skeleton className="h-14 w-3/4" />
+                <Skeleton className="h-[250px] w-full rounded-lg" />
+                <Skeleton className="h-[120px] w-full rounded-lg" />
             </div>
         )
     }
 
     return (
-        <div className="space-y-6">
-            <h1 className="text-2xl font-bold">Welcome to Your Training</h1>
+        <div className="space-y-8">
+            <h1 className="text-3xl font-bold">Welcome to Your Training</h1>
 
             {activePlans.length === 0 ? (
-                <Card>
-                    <CardContent className="pt-6 text-center">
+                <Card className="shadow-md">
+                    <CardContent className="pt-8 pb-8 text-center">
                         <div className="flex flex-col items-center justify-center py-8">
-                            <Calendar className="h-12 w-12 text-gray-400 mb-4" />
-                            <h2 className="text-xl font-semibold mb-2">No Active Plans</h2>
-                            <p className="text-muted-foreground mb-4">You don't have any active training plans yet.</p>
-                            <Button onClick={() => navigate("/client/plans")} className="bg-teal-500 hover:bg-teal-600">
+                            <Calendar className="h-20 w-20 text-gray-400 mb-6" />
+                            <h2 className="text-2xl font-semibold mb-4">No Active Plans</h2>
+                            <p className="text-lg text-muted-foreground mb-6">You don't have any active training plans yet.</p>
+                            <Button
+                                onClick={() => navigate("/client/plans")}
+                                className="bg-teal-500 hover:bg-teal-600 text-xl py-6 px-8"
+                            >
                                 View Available Plans
                             </Button>
                         </div>
@@ -113,64 +116,64 @@ function ClientDashboard() {
                 <>
                     {hasStartedPlan ? (
                         /* Today's Workout - only show if there's at least one started plan */
-                        <Card className="border-2 border-teal-100">
+                        <Card className="border-2 border-teal-100 shadow-md">
                             <CardHeader className="bg-teal-50 pb-4">
-                                <CardTitle className="flex items-center text-xl">
-                                    <Calendar className="mr-2 h-5 w-5 text-teal-600" />
+                                <CardTitle className="flex items-center text-2xl">
+                                    <Calendar className="mr-3 h-7 w-7 text-teal-600" />
                                     Today's Training
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="pt-6">
                                 {todayWorkout?.rest ? (
-                                    <div className="flex flex-col items-center justify-center py-6 text-center">
-                                        <Clock className="h-16 w-16 text-teal-500 mb-4" />
-                                        <h3 className="text-xl font-semibold mb-2">Rest Day</h3>
-                                        <p className="text-muted-foreground mb-1">No workout scheduled for today.</p>
-                                        <p className="font-medium">
+                                    <div className="flex flex-col items-center justify-center py-8 text-center">
+                                        <Clock className="h-24 w-24 text-teal-500 mb-6" />
+                                        <h3 className="text-2xl font-semibold mb-3">Rest Day</h3>
+                                        <p className="text-lg text-muted-foreground mb-2">No workout scheduled for today.</p>
+                                        <p className="text-lg font-medium">
                                             Next workout:{" "}
                                             {todayWorkout.next_training_date ? formatDate(todayWorkout.next_training_date) : "Coming soon"}
                                         </p>
                                     </div>
                                 ) : (
-                                    <div className="space-y-4">
+                                    <div className="space-y-6">
                                         <div className="flex items-center justify-between">
                                             <div>
-                                                <h3 className="text-lg font-semibold">{todayWorkout?.plan_name}</h3>
-                                                <p className="text-muted-foreground">
+                                                <h3 className="text-2xl font-semibold">{todayWorkout?.plan_name}</h3>
+                                                <p className="text-lg text-muted-foreground">
                                                     {todayWorkout?.exercises?.length || 0} exercises planned
                                                 </p>
                                             </div>
-                                            <div className="flex items-center justify-center h-12 w-12 rounded-full bg-teal-100 text-teal-700">
-                                                <Dumbbell className="h-6 w-6" />
+                                            <div className="flex items-center justify-center h-16 w-16 rounded-full bg-teal-100 text-teal-700">
+                                                <Dumbbell className="h-8 w-8" />
                                             </div>
                                         </div>
 
-                                        <div className="bg-gray-50 p-4 rounded-lg">
-                                            <p className="font-medium mb-1">
+                                        <div className="bg-gray-50 p-6 rounded-lg">
+                                            <p className="text-xl font-medium mb-2">
                                                 Week {todayWorkout?.week}, Day {todayWorkout?.day}
                                             </p>
-                                            <p className="text-sm text-muted-foreground">
+                                            <p className="text-lg text-muted-foreground">
                                                 {todayWorkout?.description || "Regular training day"}
                                             </p>
                                         </div>
                                     </div>
                                 )}
                             </CardContent>
-                            <CardFooter className="pt-2 pb-6">
+                            <CardFooter className="pt-4 pb-8">
                                 {!todayWorkout?.rest && (
                                     <Button
-                                        className="w-full bg-teal-500 hover:bg-teal-600 text-lg py-6"
+                                        className="w-full bg-teal-500 hover:bg-teal-600 text-xl py-8"
                                         onClick={() => handleStartWorkout(activePlans.filter((plan) => plan.started_at)[0].id)}
                                         disabled={startingWorkout}
                                     >
                                         {startingWorkout ? (
                                             <>
-                                                <div className="animate-spin mr-2 h-5 w-5 border-2 border-b-transparent border-white rounded-full"></div>
+                                                <div className="animate-spin mr-3 h-6 w-6 border-3 border-b-transparent border-white rounded-full"></div>
                                                 Loading...
                                             </>
                                         ) : (
                                             <>
-                                                <PlayCircle className="mr-2 h-5 w-5" />
+                                                <PlayCircle className="mr-3 h-7 w-7" />
                                                 Start Today's Workout
                                             </>
                                         )}
@@ -179,13 +182,16 @@ function ClientDashboard() {
                             </CardFooter>
                         </Card>
                     ) : (
-                        <Card>
-                            <CardContent className="pt-6 pb-6">
+                        <Card className="shadow-md">
+                            <CardContent className="pt-8 pb-8">
                                 <div className="flex flex-col items-center justify-center py-8 text-center">
-                                    <Calendar className="h-12 w-12 text-gray-400 mb-4" />
-                                    <h2 className="text-xl font-semibold mb-2">No Active Training</h2>
-                                    <p className="text-muted-foreground mb-6">You haven't started any training plans yet.</p>
-                                    <Button className="bg-teal-500 hover:bg-teal-600" onClick={() => navigate("/client/plans")}>
+                                    <Calendar className="h-20 w-20 text-gray-400 mb-6" />
+                                    <h2 className="text-2xl font-semibold mb-4">No Active Training</h2>
+                                    <p className="text-lg text-muted-foreground mb-6">You haven't started any training plans yet.</p>
+                                    <Button
+                                        className="bg-teal-500 hover:bg-teal-600 text-xl py-6 px-8"
+                                        onClick={() => navigate("/client/plans")}
+                                    >
                                         Go to My Plans
                                     </Button>
                                 </div>
@@ -195,23 +201,23 @@ function ClientDashboard() {
 
                     {/* Missed Workouts - only show if there are started plans */}
                     {activePlans.filter((plan) => plan.started_at).length > 0 && missedWorkouts.length > 0 && (
-                        <Card>
+                        <Card className="shadow-md">
                             <CardHeader className="pb-2">
-                                <CardTitle className="text-lg text-amber-700">Missed Workouts</CardTitle>
+                                <CardTitle className="text-xl text-amber-700">Missed Workouts</CardTitle>
                             </CardHeader>
                             <CardContent className="pt-4">
-                                <div className="space-y-3">
+                                <div className="space-y-4">
                                     {missedWorkouts.map((workout, index) => (
-                                        <div key={index} className="flex items-center justify-between p-3 bg-amber-50 rounded-lg">
+                                        <div key={index} className="flex items-center justify-between p-5 bg-amber-50 rounded-lg">
                                             <div>
-                                                <p className="font-medium">{formatDate(workout.scheduled_date)}</p>
-                                                <p className="text-sm text-muted-foreground">
+                                                <p className="text-lg font-medium">{formatDate(workout.scheduled_date)}</p>
+                                                <p className="text-base text-muted-foreground">
                                                     Week {workout.week}, Day {workout.day}
                                                 </p>
                                             </div>
                                             <Button
                                                 variant="outline"
-                                                className="border-amber-500 text-amber-700 hover:bg-amber-100"
+                                                className="border-amber-500 text-amber-700 hover:bg-amber-100 text-lg py-5 px-6"
                                                 onClick={() =>
                                                     handleStartWorkout(
                                                         activePlans.filter((plan) => plan.started_at)[0].id,
@@ -229,21 +235,21 @@ function ClientDashboard() {
                     )}
 
                     {/* Quick Links */}
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-6">
                         <Button
                             variant="outline"
-                            className="h-auto py-6 flex flex-col items-center justify-center text-base"
+                            className="h-auto py-8 flex flex-col items-center justify-center text-xl shadow-sm"
                             onClick={() => navigate("/client/plans")}
                         >
-                            <Calendar className="h-8 w-8 mb-2" />
+                            <Calendar className="h-10 w-10 mb-3" />
                             My Plans
                         </Button>
                         <Button
                             variant="outline"
-                            className="h-auto py-6 flex flex-col items-center justify-center text-base"
+                            className="h-auto py-8 flex flex-col items-center justify-center text-xl shadow-sm"
                             onClick={() => navigate("/client/history")}
                         >
-                            <CheckCircle2 className="h-8 w-8 mb-2" />
+                            <CheckCircle2 className="h-10 w-10 mb-3" />
                             My Progress
                         </Button>
                     </div>

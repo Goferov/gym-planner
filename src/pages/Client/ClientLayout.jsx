@@ -40,51 +40,53 @@ function ClientLayout() {
 
     return (
         <div className="flex flex-col min-h-screen bg-gray-50">
-            {/* Mobile header */}
+            {/* Header */}
             <header className="sticky top-0 z-10 bg-white border-b shadow-sm h-16 flex items-center justify-between px-4">
                 <div className="flex items-center">
                     <Sheet open={open} onOpenChange={setOpen}>
                         <SheetTrigger asChild>
-                            <Button variant="ghost" size="icon" className="md:hidden">
-                                <Menu className="h-6 w-6" />
+                            <Button variant="ghost" size="icon" className="mr-2">
+                                <Menu className="h-7 w-7" />
                                 <span className="sr-only">Open menu</span>
                             </Button>
                         </SheetTrigger>
-                        <SheetContent side="left" className="w-[240px] sm:w-[300px]">
+                        <SheetContent side="left" className="w-[280px] sm:w-[350px]">
                             <div className="flex flex-col h-full">
-                                <div className="flex items-center gap-2 py-4 border-b">
-                                    <Avatar className="h-10 w-10">
+                                <div className="flex items-center gap-3 py-6 border-b">
+                                    <Avatar className="h-14 w-14">
                                         <AvatarImage src={user?.avatar || "/placeholder.svg"} />
-                                        <AvatarFallback className="bg-teal-500 text-white">{user?.name?.charAt(0) || "U"}</AvatarFallback>
+                                        <AvatarFallback className="bg-teal-500 text-white text-xl">
+                                            {user?.name?.charAt(0) || "U"}
+                                        </AvatarFallback>
                                     </Avatar>
                                     <div>
-                                        <p className="font-medium">{user?.name || "User"}</p>
-                                        <p className="text-xs text-muted-foreground">{user?.email}</p>
+                                        <p className="font-medium text-lg">{user?.name || "User"}</p>
+                                        <p className="text-sm text-muted-foreground">{user?.email}</p>
                                     </div>
                                 </div>
-                                <nav className="flex flex-col gap-1 py-4">
+                                <nav className="flex flex-col gap-2 py-6">
                                     {navigation.map((item) => (
                                         <Link
                                             key={item.name}
                                             to={item.href}
                                             onClick={() => setOpen(false)}
                                             className={cn(
-                                                "flex items-center gap-3 rounded-md px-3 py-4 text-base transition-all",
+                                                "flex items-center gap-3 rounded-md px-4 py-5 text-lg transition-all",
                                                 isActive(item.href) ? "bg-teal-500 text-white" : "text-gray-600 hover:bg-gray-100",
                                             )}
                                         >
-                                            <item.icon className="h-5 w-5" />
+                                            <item.icon className="h-6 w-6" />
                                             {item.name}
                                         </Link>
                                     ))}
                                 </nav>
-                                <div className="mt-auto border-t py-4">
+                                <div className="mt-auto border-t py-6">
                                     <Button
                                         variant="ghost"
-                                        className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50 py-4 px-3 h-auto"
+                                        className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50 py-5 px-4 h-auto text-lg"
                                         onClick={handleLogout}
                                     >
-                                        <LogOut className="h-5 w-5 mr-3" />
+                                        <LogOut className="h-6 w-6 mr-3" />
                                         Log Out
                                     </Button>
                                 </div>
@@ -93,7 +95,7 @@ function ClientLayout() {
                     </Sheet>
                     <div className="text-xl font-semibold ml-2">Training App</div>
                 </div>
-                <Avatar className="h-9 w-9 md:hidden">
+                <Avatar className="h-10 w-10">
                     <AvatarImage src={user?.avatar || "/placeholder.svg"} />
                     <AvatarFallback className="bg-teal-500 text-white">{user?.name?.charAt(0) || "U"}</AvatarFallback>
                 </Avatar>
@@ -103,66 +105,6 @@ function ClientLayout() {
             <main className="flex-1 container max-w-lg mx-auto px-4 py-6">
                 <Outlet />
             </main>
-
-            {/* Bottom navigation for mobile */}
-            <div className="md:hidden sticky bottom-0 bg-white border-t shadow-sm">
-                <nav className="flex justify-around">
-                    {navigation.map((item) => (
-                        <Link
-                            key={item.name}
-                            to={item.href}
-                            className={cn(
-                                "flex flex-1 flex-col items-center py-3 text-xs",
-                                isActive(item.href) ? "text-teal-500 font-medium" : "text-gray-500 hover:text-gray-900",
-                            )}
-                        >
-                            <item.icon className="h-6 w-6 mb-1" />
-                            {item.name}
-                        </Link>
-                    ))}
-                </nav>
-            </div>
-
-            {/* Desktop sidebar - hidden on mobile */}
-            <div className="hidden md:block fixed left-0 top-0 bottom-0 w-64 bg-white border-r shadow-sm">
-                <div className="flex flex-col h-full">
-                    <div className="flex items-center gap-3 p-6 border-b">
-                        <Avatar className="h-10 w-10">
-                            <AvatarImage src={user?.avatar || "/placeholder.svg"} />
-                            <AvatarFallback className="bg-teal-500 text-white">{user?.name?.charAt(0) || "U"}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                            <p className="font-medium">{user?.name || "User"}</p>
-                            <p className="text-xs text-muted-foreground">{user?.email}</p>
-                        </div>
-                    </div>
-                    <nav className="flex flex-col gap-1 p-4">
-                        {navigation.map((item) => (
-                            <Link
-                                key={item.name}
-                                to={item.href}
-                                className={cn(
-                                    "flex items-center gap-3 rounded-md px-4 py-3 text-base transition-all",
-                                    isActive(item.href) ? "bg-teal-500 text-white" : "text-gray-600 hover:bg-gray-100",
-                                )}
-                            >
-                                <item.icon className="h-5 w-5" />
-                                {item.name}
-                            </Link>
-                        ))}
-                    </nav>
-                    <div className="mt-auto border-t p-4">
-                        <Button
-                            variant="ghost"
-                            className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50"
-                            onClick={handleLogout}
-                        >
-                            <LogOut className="h-5 w-5 mr-3" />
-                            Log Out
-                        </Button>
-                    </div>
-                </div>
-            </div>
         </div>
     )
 }

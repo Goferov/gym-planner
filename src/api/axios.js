@@ -71,8 +71,7 @@ export async function createExercise(exerciseData) {
 
 
 export async function updateExercise(id, exerciseData) {
-    const { data } = await api.put(`/exercises/${id}`, exerciseData);
-    return data; // Zwraca zaktualizowany obiekt
+    return api.post(`/exercises/${id}`, exerciseData)
 }
 
 

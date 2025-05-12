@@ -116,42 +116,41 @@ function Workout() {
 
     if (loading) {
         return (
-            <div className="space-y-6">
+            <div className="space-y-8">
                 <div className="flex items-center justify-between">
-                    <Button variant="ghost" size="sm" onClick={() => navigate("/client")}>
-                        <ArrowLeft className="h-4 w-4" />
+                    <Button variant="ghost" size="lg" onClick={() => navigate("/client")}>
+                        <ArrowLeft className="h-6 w-6" />
                     </Button>
-                    <Skeleton className="h-6 w-24" />
+                    <Skeleton className="h-8 w-32" />
                 </div>
-                <Skeleton className="h-[200px] w-full rounded-lg" />
-                <Skeleton className="h-[200px] w-full rounded-lg" />
+                <Skeleton className="h-[300px] w-full rounded-lg" />
+                <Skeleton className="h-[150px] w-full rounded-lg" />
                 <div className="flex justify-between">
-                    <Skeleton className="h-10 w-32" />
-                    <Skeleton className="h-10 w-32" />
+                    <Skeleton className="h-16 w-full" />
                 </div>
             </div>
         )
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-8">
             <div className="flex items-center justify-between">
-                <Button variant="ghost" size="sm" onClick={() => navigate("/client")}>
-                    <ArrowLeft className="h-4 w-4" />
+                <Button variant="ghost" size="lg" onClick={() => navigate("/client")}>
+                    <ArrowLeft className="h-6 w-6" />
                 </Button>
-                <div className="text-sm font-medium">
+                <div className="text-xl font-medium">
                     Exercise {currentExerciseIndex + 1} of {workout?.exercises?.length}
                 </div>
             </div>
 
-            <Progress value={progress} className="h-2" />
+            <Progress value={progress} className="h-3" />
 
             {currentExercise && (
-                <Card>
+                <Card className="shadow-md">
                     <CardHeader>
-                        <CardTitle className="text-xl">{currentExercise.exercise_name}</CardTitle>
+                        <CardTitle className="text-2xl text-center">{currentExercise.exercise_name}</CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-6">
                         {currentExercise.video_url && (
                             <div className="aspect-video bg-black rounded-md overflow-hidden">
                                 <video
@@ -164,42 +163,34 @@ function Workout() {
                             </div>
                         )}
 
-                        <div className="bg-gray-50 p-4 rounded-lg space-y-4">
-                            <div className="grid grid-cols-1 gap-4 text-center">
-                                <div className="bg-white p-3 rounded-md shadow-sm">
-                                    <div className="text-muted-foreground text-sm">Reps</div>
-                                    <div className="text-2xl font-bold">{currentExercise.reps}</div>
-                                </div>
-                                {currentExercise.rest_time && (
-                                    <div className="bg-white p-3 rounded-md shadow-sm">
-                                        <div className="text-muted-foreground text-sm">Rest</div>
-                                        <div className="text-2xl font-bold">{currentExercise.rest_time}s</div>
-                                    </div>
-                                )}
+                        <div className="bg-gray-50 p-6 rounded-lg">
+                            <div className="text-center">
+                                <div className="text-muted-foreground text-xl mb-2">Repetitions</div>
+                                <div className="text-4xl font-bold">{currentExercise.reps}</div>
                             </div>
 
                             {currentExercise.notes && (
-                                <div className="bg-white p-3 rounded-md shadow-sm">
-                                    <div className="text-muted-foreground text-sm mb-1">Notes:</div>
-                                    <div>{currentExercise.notes}</div>
+                                <div className="mt-6 bg-white p-4 rounded-md shadow-sm">
+                                    <div className="text-muted-foreground text-lg mb-2">Instructions:</div>
+                                    <div className="text-lg">{currentExercise.notes}</div>
                                 </div>
                             )}
                         </div>
                     </CardContent>
-                    <CardFooter className="flex flex-col gap-3 pt-2 pb-6">
+                    <CardFooter className="flex flex-col gap-4 pt-4 pb-8">
                         <Button
-                            className="w-full bg-teal-500 hover:bg-teal-600 text-lg py-6"
+                            className="w-full bg-teal-500 hover:bg-teal-600 text-xl py-8"
                             onClick={() => setConfirmDialogOpen(true)}
                         >
-                            <CheckCircle2 className="mr-2 h-5 w-5" />
+                            <CheckCircle2 className="mr-3 h-7 w-7" />
                             Complete Exercise
                         </Button>
                         <Button
                             variant="outline"
-                            className="w-full text-amber-600 border-amber-300 hover:bg-amber-50"
+                            className="w-full text-amber-600 border-amber-300 hover:bg-amber-50 text-xl py-6"
                             onClick={() => setDifficultyDialogOpen(true)}
                         >
-                            <Flag className="mr-2 h-5 w-5" />
+                            <Flag className="mr-3 h-6 w-6" />
                             Report Difficulty
                         </Button>
                     </CardFooter>
@@ -210,26 +201,28 @@ function Workout() {
             <Dialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
                 <DialogContent className="sm:max-w-md">
                     <DialogHeader>
-                        <DialogTitle>Complete Exercise</DialogTitle>
-                        <DialogDescription>Have you completed all {currentExercise?.sets} sets of this exercise?</DialogDescription>
+                        <DialogTitle className="text-2xl">Complete Exercise</DialogTitle>
+                        <DialogDescription className="text-lg pt-2">
+                            Have you completed all repetitions of this exercise?
+                        </DialogDescription>
                     </DialogHeader>
-                    <DialogFooter className="flex flex-col sm:flex-row gap-2 sm:justify-between">
-                        <Button variant="outline" onClick={() => setConfirmDialogOpen(false)} className="sm:flex-1">
+                    <DialogFooter className="flex flex-col sm:flex-row gap-3 sm:justify-between pt-4">
+                        <Button variant="outline" onClick={() => setConfirmDialogOpen(false)} className="sm:flex-1 text-lg py-6">
                             No, Go Back
                         </Button>
                         <Button
                             onClick={handleCompleteExercise}
                             disabled={submitting}
-                            className="bg-teal-500 hover:bg-teal-600 sm:flex-1"
+                            className="bg-teal-500 hover:bg-teal-600 sm:flex-1 text-lg py-6"
                         >
                             {submitting ? (
                                 <>
-                                    <div className="animate-spin mr-2 h-4 w-4 border-2 border-b-transparent border-white rounded-full"></div>
+                                    <div className="animate-spin mr-3 h-5 w-5 border-3 border-b-transparent border-white rounded-full"></div>
                                     Saving...
                                 </>
                             ) : (
                                 <>
-                                    <CheckCircle2 className="mr-2 h-4 w-4" />
+                                    <CheckCircle2 className="mr-3 h-5 w-5" />
                                     Yes, Complete
                                 </>
                             )}
@@ -242,51 +235,51 @@ function Workout() {
             <Dialog open={difficultyDialogOpen} onOpenChange={setDifficultyDialogOpen}>
                 <DialogContent className="sm:max-w-md">
                     <DialogHeader>
-                        <DialogTitle>Report Exercise Difficulty</DialogTitle>
-                        <DialogDescription>How difficult was this exercise for you?</DialogDescription>
+                        <DialogTitle className="text-2xl">How Difficult Was This?</DialogTitle>
+                        <DialogDescription className="text-lg pt-2">Rate the difficulty of this exercise</DialogDescription>
                     </DialogHeader>
 
-                    <div className="py-4">
-                        <div className="flex justify-center mb-6">
+                    <div className="py-6">
+                        <div className="flex justify-center mb-8">
                             {[1, 2, 3, 4, 5].map((rating) => (
                                 <Button
                                     key={rating}
                                     type="button"
                                     variant="ghost"
-                                    className={`h-12 w-12 p-0 ${
+                                    className={`h-16 w-16 p-0 ${
                                         selectedDifficulty === rating ? "text-amber-500" : "text-gray-300 hover:text-amber-300"
                                     }`}
                                     onClick={() => setSelectedDifficulty(rating)}
                                 >
-                                    <Star className="h-8 w-8 fill-current" />
+                                    <Star className="h-12 w-12 fill-current" />
                                     <span className="sr-only">{rating} stars</span>
                                 </Button>
                             ))}
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium">Additional comments (optional):</label>
+                        <div className="space-y-3">
+                            <label className="text-lg font-medium">Comments (optional):</label>
                             <Textarea
                                 value={comment}
                                 onChange={(e) => setComment(e.target.value)}
-                                placeholder="Tell your trainer about any issues or questions..."
-                                className="min-h-[100px]"
+                                placeholder="Tell your trainer about any issues..."
+                                className="min-h-[120px] text-lg p-4"
                             />
                         </div>
                     </div>
 
-                    <DialogFooter className="flex flex-col sm:flex-row gap-2">
-                        <Button variant="outline" onClick={() => setDifficultyDialogOpen(false)} className="sm:flex-1">
+                    <DialogFooter className="flex flex-col sm:flex-row gap-3">
+                        <Button variant="outline" onClick={() => setDifficultyDialogOpen(false)} className="sm:flex-1 text-lg py-6">
                             Cancel
                         </Button>
                         <Button
                             onClick={handleReportDifficulty}
                             disabled={submitting || selectedDifficulty === 0}
-                            className="bg-teal-500 hover:bg-teal-600 sm:flex-1"
+                            className="bg-teal-500 hover:bg-teal-600 sm:flex-1 text-lg py-6"
                         >
                             {submitting ? (
                                 <>
-                                    <div className="animate-spin mr-2 h-4 w-4 border-2 border-b-transparent border-white rounded-full"></div>
+                                    <div className="animate-spin mr-3 h-5 w-5 border-3 border-b-transparent border-white rounded-full"></div>
                                     Submitting...
                                 </>
                             ) : (
@@ -301,45 +294,32 @@ function Workout() {
             <Dialog open={summaryDialogOpen} onOpenChange={setSummaryDialogOpen}>
                 <DialogContent className="sm:max-w-md">
                     <DialogHeader>
-                        <DialogTitle>Workout Complete!</DialogTitle>
-                        <DialogDescription>Great job! You've completed today's workout.</DialogDescription>
+                        <DialogTitle className="text-2xl">Workout Complete!</DialogTitle>
+                        <DialogDescription className="text-lg pt-2">Great job! You've completed today's workout.</DialogDescription>
                     </DialogHeader>
 
-                    <div className="py-4">
+                    <div className="py-6">
                         {summary && (
-                            <div className="space-y-4">
+                            <div className="space-y-6">
                                 <div className="flex justify-center">
-                                    <div className="h-24 w-24 rounded-full bg-teal-100 flex items-center justify-center">
-                                        <CheckCircle2 className="h-12 w-12 text-teal-600" />
+                                    <div className="h-32 w-32 rounded-full bg-teal-100 flex items-center justify-center">
+                                        <CheckCircle2 className="h-16 w-16 text-teal-600" />
                                     </div>
                                 </div>
 
                                 <div className="text-center">
-                                    <h3 className="text-xl font-bold mb-1">
+                                    <h3 className="text-2xl font-bold mb-2">
                                         {summary.done}/{summary.total} Exercises Completed
                                     </h3>
-                                    <p className="text-muted-foreground">{summary.progress}% of today's workout</p>
-                                </div>
-
-                                <div className="bg-gray-50 p-4 rounded-lg">
-                                    <div className="grid grid-cols-2 gap-4 text-center">
-                                        <div>
-                                            <div className="text-muted-foreground text-sm">Total Sets</div>
-                                            <div className="text-xl font-bold">{summary.total_sets}</div>
-                                        </div>
-                                        <div>
-                                            <div className="text-muted-foreground text-sm">Total Reps</div>
-                                            <div className="text-xl font-bold">{summary.total_reps}</div>
-                                        </div>
-                                    </div>
+                                    <p className="text-xl text-muted-foreground">{summary.progress}% of today's workout</p>
                                 </div>
                             </div>
                         )}
                     </div>
 
                     <DialogFooter>
-                        <Button onClick={handleFinishWorkout} className="w-full bg-teal-500 hover:bg-teal-600">
-                            <ArrowRight className="mr-2 h-4 w-4" />
+                        <Button onClick={handleFinishWorkout} className="w-full bg-teal-500 hover:bg-teal-600 text-xl py-6">
+                            <ArrowRight className="mr-3 h-6 w-6" />
                             Return to Home
                         </Button>
                     </DialogFooter>
