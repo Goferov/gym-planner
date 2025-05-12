@@ -4,7 +4,7 @@ import { useContext, useState } from "react"
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom"
 import { AuthContext } from "../../context/AuthContext"
 import { Button } from "@/components/ui/button"
-import { Home, Calendar, History, Settings, Menu, LogOut } from "lucide-react"
+import { Home, Calendar, History, Settings, Menu, LogOut, ArrowLeft } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -37,6 +37,8 @@ function ClientLayout() {
     const isActive = (path) => {
         return location.pathname === `/client/${path}`
     }
+
+    const isHomePage = location.pathname === "/client" || location.pathname === "/client/"
 
     return (
         <div className="flex flex-col min-h-screen bg-gray-50">
@@ -93,6 +95,17 @@ function ClientLayout() {
                             </div>
                         </SheetContent>
                     </Sheet>
+                    {!isHomePage && (
+                        <Button
+                            variant="ghost"
+                            size="lg"
+                            onClick={() => navigate("/client")}
+                            className="mr-2 bg-teal-50 hover:bg-teal-100 text-teal-700"
+                        >
+                            <ArrowLeft className="h-6 w-6 mr-2" />
+                            <span className="font-medium">Back Home</span>
+                        </Button>
+                    )}
                     <div className="text-xl font-semibold ml-2">Training App</div>
                 </div>
                 <div onClick={() => navigate("/client/settings")}>

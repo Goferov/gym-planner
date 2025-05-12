@@ -160,15 +160,6 @@ function ClientPlanHistory() {
     return (
         <div className="space-y-6">
             <div className="flex items-center gap-2">
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => navigate("/trainer/clients")}
-                    className="hover:bg-muted transition-colors"
-                >
-                    <ArrowLeft className="h-4 w-4 mr-2" />
-                    Back to Clients
-                </Button>
                 <h1 className="text-3xl font-bold tracking-tight">Client Plan History</h1>
             </div>
 
