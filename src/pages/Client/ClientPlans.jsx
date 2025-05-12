@@ -9,7 +9,7 @@ import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { format, parseISO } from "date-fns"
-import { Calendar, CheckCircle2, Clock, PlayCircle } from "lucide-react"
+import { Calendar, CheckCircle2, PlayCircle } from "lucide-react"
 import { toast } from "sonner"
 
 function ClientPlans() {
@@ -112,20 +112,6 @@ function ClientPlans() {
                                     </CardHeader>
                                     <CardContent className="pb-3">
                                         <Progress value={plan.progress} className="h-3 mb-6" />
-
-                                        <div className="grid grid-cols-2 gap-4 text-lg">
-                                            <div className="flex items-center gap-2 text-muted-foreground">
-                                                <Calendar className="h-5 w-5" />
-                                                <span>Started:</span>
-                                            </div>
-                                            <div className="text-right font-medium">{formatDate(plan.started_at)}</div>
-
-                                            <div className="flex items-center gap-2 text-muted-foreground">
-                                                <Clock className="h-5 w-5" />
-                                                <span>Duration:</span>
-                                            </div>
-                                            <div className="text-right font-medium">{plan.duration_weeks} weeks</div>
-                                        </div>
                                     </CardContent>
                                     <CardFooter className="pt-4 pb-6">
                                         <Button
@@ -156,20 +142,6 @@ function ClientPlans() {
                                         <p className="text-lg text-muted-foreground mb-6">
                                             {plan.description || "A training plan created by your trainer."}
                                         </p>
-
-                                        <div className="grid grid-cols-2 gap-4 text-lg">
-                                            <div className="flex items-center gap-2 text-muted-foreground">
-                                                <Calendar className="h-5 w-5" />
-                                                <span>Assigned:</span>
-                                            </div>
-                                            <div className="text-right font-medium">{formatDate(plan.assigned_at)}</div>
-
-                                            <div className="flex items-center gap-2 text-muted-foreground">
-                                                <Clock className="h-5 w-5" />
-                                                <span>Duration:</span>
-                                            </div>
-                                            <div className="text-right font-medium">{plan.duration_weeks} weeks</div>
-                                        </div>
                                     </CardContent>
                                     <CardFooter className="pt-4 pb-6">
                                         <Button
@@ -216,20 +188,6 @@ function ClientPlans() {
                                     </CardHeader>
                                     <CardContent className="pb-3">
                                         <Progress value={plan.progress} className="h-3 mb-6" />
-
-                                        <div className="grid grid-cols-2 gap-4 text-lg">
-                                            <div className="flex items-center gap-2 text-muted-foreground">
-                                                <Calendar className="h-5 w-5" />
-                                                <span>Completed:</span>
-                                            </div>
-                                            <div className="text-right font-medium">{formatDate(plan.completed_at)}</div>
-
-                                            <div className="flex items-center gap-2 text-muted-foreground">
-                                                <Clock className="h-5 w-5" />
-                                                <span>Duration:</span>
-                                            </div>
-                                            <div className="text-right font-medium">{plan.duration_weeks} weeks</div>
-                                        </div>
                                     </CardContent>
                                     <CardFooter className="pt-4 pb-6">
                                         <Button

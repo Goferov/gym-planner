@@ -68,7 +68,7 @@ function Login() {
                     <div className="mx-auto bg-white p-2 rounded-full w-12 h-12 flex items-center justify-center shadow-sm mb-2">
                         <Dumbbell className="h-6 w-6 text-teal-600" />
                     </div>
-                    <CardTitle className="text-2xl font-bold text-center">Trainer Login</CardTitle>
+                    <CardTitle className="text-2xl font-bold text-center">Login</CardTitle>
                     <CardDescription className="text-center">Enter your credentials to access your account</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -114,7 +114,7 @@ function Login() {
                     </div>
 
                     <Button variant="outline" className="w-full" onClick={() => navigate("/register")}>
-                        Register as Trainer
+                        Register
                         <UserPlus className="ml-2 h-4 w-4" />
                     </Button>
                 </CardFooter>

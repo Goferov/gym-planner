@@ -95,10 +95,12 @@ function ClientLayout() {
                     </Sheet>
                     <div className="text-xl font-semibold ml-2">Training App</div>
                 </div>
-                <Avatar className="h-10 w-10">
-                    <AvatarImage src={user?.avatar || "/placeholder.svg"} />
-                    <AvatarFallback className="bg-teal-500 text-white">{user?.name?.charAt(0) || "U"}</AvatarFallback>
-                </Avatar>
+                <div onClick={() => navigate("/client/settings")}>
+                    <Avatar className="h-10 w-10 cursor-pointer">
+                        <AvatarImage src={user?.avatar || "/placeholder.svg"} />
+                        <AvatarFallback className="bg-teal-500 text-white">{user?.name?.charAt(0) || "U"}</AvatarFallback>
+                    </Avatar>
+                </div>
             </header>
 
             {/* Main content */}

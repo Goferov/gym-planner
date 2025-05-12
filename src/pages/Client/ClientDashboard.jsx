@@ -84,7 +84,7 @@ function ClientDashboard() {
 
     if (loading) {
         return (
-            <div className="space-y-6">
+            <div className="space-y-8">
                 <Skeleton className="h-14 w-3/4" />
                 <Skeleton className="h-[250px] w-full rounded-lg" />
                 <Skeleton className="h-[120px] w-full rounded-lg" />
@@ -128,7 +128,6 @@ function ClientDashboard() {
                                     <div className="flex flex-col items-center justify-center py-8 text-center">
                                         <Clock className="h-24 w-24 text-teal-500 mb-6" />
                                         <h3 className="text-2xl font-semibold mb-3">Rest Day</h3>
-                                        <p className="text-lg text-muted-foreground mb-2">No workout scheduled for today.</p>
                                         <p className="text-lg font-medium">
                                             Next workout:{" "}
                                             {todayWorkout.next_training_date ? formatDate(todayWorkout.next_training_date) : "Coming soon"}

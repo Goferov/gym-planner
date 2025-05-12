@@ -23,21 +23,47 @@ function Workout() {
     const { planId } = useParams()
     const navigate = useNavigate()
     const videoRef = useRef(null)
+    const imageRef = useRef(null)
 
     const [workout, setWorkout] = useState(null)
     const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0)
     const [loading, setLoading] = useState(true)
     const [submitting, setSubmitting] = useState(false)
-    const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)
     const [difficultyDialogOpen, setDifficultyDialogOpen] = useState(false)
     const [selectedDifficulty, setSelectedDifficulty] = useState(0)
     const [comment, setComment] = useState("")
     const [summary, setSummary] = useState(null)
     const [summaryDialogOpen, setSummaryDialogOpen] = useState(false)
+    const [timeRemaining, setTimeRemaining] = useState(10)
+    const [canProceed, setCanProceed] = useState(false)
 
     useEffect(() => {
         fetchWorkout()
     }, [planId])
+
+    // Timer for enabling the "Complete Exercise" button
+    useEffect(() => {
+        if (!loading && workout) {
+            const timer = setInterval(() => {
+                setTimeRemaining((prev) => {
+                    if (prev <= 1) {
+                        clearInterval(timer)
+                        setCanProceed(true)
+                        return 0
+                    }
+                    return prev - 1
+                })
+            }, 1000)
+
+            return () => clearInterval(timer)
+        }
+    }, [loading, workout])
+
+    // Reset timer when moving to next exercise
+    useEffect(() => {
+        setTimeRemaining(10)
+        setCanProceed(false)
+    }, [currentExerciseIndex])
 
     async function fetchWorkout() {
         try {
@@ -63,6 +89,8 @@ function Workout() {
     }
 
     async function handleCompleteExercise() {
+        if (!canProceed) return
+
         try {
             setSubmitting(true)
             const currentExercise = workout.exercises[currentExerciseIndex]
@@ -71,7 +99,6 @@ function Workout() {
             // Move to next exercise or show summary
             if (currentExerciseIndex < workout.exercises.length - 1) {
                 setCurrentExerciseIndex(currentExerciseIndex + 1)
-                setConfirmDialogOpen(false)
                 // Reset video if there is one
                 if (videoRef.current) {
                     videoRef.current.currentTime = 0
@@ -79,7 +106,6 @@ function Workout() {
             } else {
                 // Last exercise completed, show summary
                 await fetchSummary()
-                setConfirmDialogOpen(false)
                 setSummaryDialogOpen(true)
             }
         } catch (err) {
@@ -99,6 +125,19 @@ function Workout() {
             setDifficultyDialogOpen(false)
             setSelectedDifficulty(0)
             setComment("")
+
+            // Move to next exercise after reporting difficulty
+            if (currentExerciseIndex < workout.exercises.length - 1) {
+                setCurrentExerciseIndex(currentExerciseIndex + 1)
+                // Reset video if there is one
+                if (videoRef.current) {
+                    videoRef.current.currentTime = 0
+                }
+            } else {
+                // Last exercise completed, show summary
+                await fetchSummary()
+                setSummaryDialogOpen(true)
+            }
         } catch (err) {
             console.error("Error reporting difficulty:", err)
             toast.error("Could not submit feedback")
@@ -109,6 +148,21 @@ function Workout() {
 
     function handleFinishWorkout() {
         navigate("/client")
+    }
+
+    function handleImageError() {
+        if (imageRef.current) {
+            imageRef.current.src = "/test.gif"
+        }
+    }
+
+    function handleVideoError() {
+        if (videoRef.current) {
+            const img = document.createElement("img")
+            img.src = "/test.gif"
+            img.className = "w-full h-full object-contain"
+            videoRef.current.parentNode.replaceChild(img, videoRef.current)
+        }
     }
 
     const currentExercise = workout?.exercises?.[currentExerciseIndex]
@@ -151,17 +205,29 @@ function Workout() {
                         <CardTitle className="text-2xl text-center">{currentExercise.exercise_name}</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-6">
-                        {currentExercise.video_url && (
-                            <div className="aspect-video bg-black rounded-md overflow-hidden">
+                        {/* Media display based on preferred_media */}
+                        <div className="aspect-video bg-gray-100 rounded-md overflow-hidden flex items-center justify-center">
+                            {currentExercise.preferred_media === "video" && currentExercise.video_url ? (
                                 <video
                                     ref={videoRef}
                                     src={currentExercise.video_url}
                                     controls
                                     className="w-full h-full"
                                     poster="/placeholder.svg?height=400&width=600"
+                                    onError={handleVideoError}
                                 />
-                            </div>
-                        )}
+                            ) : currentExercise.image_path ? (
+                                <img
+                                    ref={imageRef}
+                                    src={currentExercise.image_path || "/placeholder.svg"}
+                                    alt={currentExercise.exercise_name}
+                                    className="max-h-full object-contain"
+                                    onError={handleImageError}
+                                />
+                            ) : (
+                                <img src="/test.gif" alt="Exercise demonstration" className="max-h-full object-contain" />
+                            )}
+                        </div>
 
                         <div className="bg-gray-50 p-6 rounded-lg">
                             <div className="text-center">
@@ -179,11 +245,25 @@ function Workout() {
                     </CardContent>
                     <CardFooter className="flex flex-col gap-4 pt-4 pb-8">
                         <Button
-                            className="w-full bg-teal-500 hover:bg-teal-600 text-xl py-8"
-                            onClick={() => setConfirmDialogOpen(true)}
+                            className={`w-full ${canProceed ? "bg-teal-500 hover:bg-teal-600" : "bg-gray-400"} text-xl py-8`}
+                            onClick={handleCompleteExercise}
+                            disabled={submitting || !canProceed}
                         >
-                            <CheckCircle2 className="mr-3 h-7 w-7" />
-                            Complete Exercise
+                            {!canProceed ? (
+                                <>
+                                    <div className="mr-3">Wait {timeRemaining}s</div>
+                                </>
+                            ) : submitting ? (
+                                <>
+                                    <div className="animate-spin mr-3 h-6 w-6 border-3 border-b-transparent border-white rounded-full"></div>
+                                    Saving...
+                                </>
+                            ) : (
+                                <>
+                                    <CheckCircle2 className="mr-3 h-7 w-7" />
+                                    Complete Exercise
+                                </>
+                            )}
                         </Button>
                         <Button
                             variant="outline"
@@ -191,45 +271,11 @@ function Workout() {
                             onClick={() => setDifficultyDialogOpen(true)}
                         >
                             <Flag className="mr-3 h-6 w-6" />
-                            Report Difficulty
+                            This Was Difficult
                         </Button>
                     </CardFooter>
                 </Card>
             )}
-
-            {/* Confirm Complete Dialog */}
-            <Dialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
-                <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                        <DialogTitle className="text-2xl">Complete Exercise</DialogTitle>
-                        <DialogDescription className="text-lg pt-2">
-                            Have you completed all repetitions of this exercise?
-                        </DialogDescription>
-                    </DialogHeader>
-                    <DialogFooter className="flex flex-col sm:flex-row gap-3 sm:justify-between pt-4">
-                        <Button variant="outline" onClick={() => setConfirmDialogOpen(false)} className="sm:flex-1 text-lg py-6">
-                            No, Go Back
-                        </Button>
-                        <Button
-                            onClick={handleCompleteExercise}
-                            disabled={submitting}
-                            className="bg-teal-500 hover:bg-teal-600 sm:flex-1 text-lg py-6"
-                        >
-                            {submitting ? (
-                                <>
-                                    <div className="animate-spin mr-3 h-5 w-5 border-3 border-b-transparent border-white rounded-full"></div>
-                                    Saving...
-                                </>
-                            ) : (
-                                <>
-                                    <CheckCircle2 className="mr-3 h-5 w-5" />
-                                    Yes, Complete
-                                </>
-                            )}
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
 
             {/* Report Difficulty Dialog */}
             <Dialog open={difficultyDialogOpen} onOpenChange={setDifficultyDialogOpen}>
@@ -283,7 +329,7 @@ function Workout() {
                                     Submitting...
                                 </>
                             ) : (
-                                "Submit Feedback"
+                                "Submit & Continue"
                             )}
                         </Button>
                     </DialogFooter>
@@ -294,8 +340,10 @@ function Workout() {
             <Dialog open={summaryDialogOpen} onOpenChange={setSummaryDialogOpen}>
                 <DialogContent className="sm:max-w-md">
                     <DialogHeader>
-                        <DialogTitle className="text-2xl">Workout Complete!</DialogTitle>
-                        <DialogDescription className="text-lg pt-2">Great job! You've completed today's workout.</DialogDescription>
+                        <DialogTitle className="text-2xl text-center">Workout Complete!</DialogTitle>
+                        <DialogDescription className="text-lg pt-2 text-center">
+                            Great job! You've completed today's workout.
+                        </DialogDescription>
                     </DialogHeader>
 
                     <div className="py-6">
@@ -312,6 +360,22 @@ function Workout() {
                                         {summary.done}/{summary.total} Exercises Completed
                                     </h3>
                                     <p className="text-xl text-muted-foreground">{summary.progress}% of today's workout</p>
+                                </div>
+
+                                {/* Today's exercises summary */}
+                                <div className="mt-6 bg-gray-50 p-4 rounded-lg">
+                                    <h4 className="text-xl font-semibold mb-4 text-center">Today's Exercises</h4>
+                                    <div className="space-y-3">
+                                        {workout.exercises.map((exercise, index) => (
+                                            <div key={index} className="flex items-center bg-white p-3 rounded-md shadow-sm">
+                                                <CheckCircle2 className="h-6 w-6 text-green-500 mr-3 flex-shrink-0" />
+                                                <div>
+                                                    <p className="font-medium text-lg">{exercise.exercise_name}</p>
+                                                    <p className="text-muted-foreground">{exercise.reps} repetitions</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                         )}
