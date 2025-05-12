@@ -75,9 +75,9 @@ function ClientPlans() {
     }
 
     // Separate plans into categories
-    const startedPlans = plans.filter((plan) => plan.started_at && plan.active)
+    const startedPlans = plans.filter((plan) => plan.started_at)
     const availablePlans = plans.filter((plan) => !plan.started_at && plan.active)
-    const completedPlans = plans.filter((plan) => !plan.active)
+    const completedPlans = plans.filter((plan) => plan.completed_at || (!plan.active && plan.started_at))
 
     return (
         <div className="space-y-6">
@@ -106,7 +106,7 @@ function ClientPlans() {
                                 <Card key={plan.id} className="border-2 border-teal-100">
                                     <CardHeader className="pb-2">
                                         <div className="flex justify-between items-start">
-                                            <CardTitle>{plan.plan_name}</CardTitle>
+                                            <CardTitle>{plan.plan_name || plan.name}</CardTitle>
                                             <Badge className="bg-teal-500">{plan.progress}% Complete</Badge>
                                         </div>
                                     </CardHeader>
@@ -150,7 +150,7 @@ function ClientPlans() {
                             availablePlans.map((plan) => (
                                 <Card key={plan.id}>
                                     <CardHeader className="pb-2">
-                                        <CardTitle>{plan.plan_name}</CardTitle>
+                                        <CardTitle>{plan.plan_name || plan.name}</CardTitle>
                                     </CardHeader>
                                     <CardContent className="pb-2">
                                         <p className="text-muted-foreground mb-4">
@@ -204,7 +204,7 @@ function ClientPlans() {
                                 <Card key={plan.id} className="bg-gray-50">
                                     <CardHeader className="pb-2">
                                         <div className="flex justify-between items-start">
-                                            <CardTitle>{plan.plan_name}</CardTitle>
+                                            <CardTitle>{plan.plan_name || plan.name}</CardTitle>
                                             <Badge variant="outline" className="bg-green-100 text-green-800 border-green-200">
                                                 <CheckCircle2 className="mr-1 h-3 w-3" />
                                                 Completed

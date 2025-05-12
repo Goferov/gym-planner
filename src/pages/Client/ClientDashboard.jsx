@@ -16,6 +16,7 @@ function ClientDashboard() {
     const [missedWorkouts, setMissedWorkouts] = useState([])
     const [loading, setLoading] = useState(true)
     const [startingWorkout, setStartingWorkout] = useState(false)
+    const [hasStartedPlan, setHasStartedPlan] = useState(false)
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -29,6 +30,10 @@ function ClientDashboard() {
             const plansResponse = await fetchPlanUsers({ active: 1 })
             const plans = plansResponse.data || []
             setActivePlans(plans)
+
+            // Check if user has any started plans
+            const hasStartedPlans = plans.some((plan) => plan.started_at)
+            setHasStartedPlan(hasStartedPlans)
 
             // If there's at least one started plan, fetch today's workout
             const startedPlans = plans.filter((plan) => plan.started_at)
@@ -106,27 +111,7 @@ function ClientDashboard() {
                 </Card>
             ) : (
                 <>
-                    {/* Check if there are any started plans */}
-                    {activePlans.filter((plan) => plan.started_at).length === 0 ? (
-                        <Card className="border-2 border-teal-100">
-                            <CardHeader className="bg-teal-50 pb-4">
-                                <CardTitle className="flex items-center text-xl">
-                                    <Calendar className="mr-2 h-5 w-5 text-teal-600" />
-                                    Get Started
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className="pt-6 text-center">
-                                <div className="flex flex-col items-center justify-center py-6">
-                                    <PlayCircle className="h-16 w-16 text-teal-500 mb-4" />
-                                    <h3 className="text-xl font-semibold mb-2">Start Your Training</h3>
-                                    <p className="text-muted-foreground mb-4">You have plans assigned but haven't started any yet.</p>
-                                    <Button onClick={() => navigate("/client/plans")} className="bg-teal-500 hover:bg-teal-600">
-                                        Go to My Plans
-                                    </Button>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ) : (
+                    {hasStartedPlan ? (
                         /* Today's Workout - only show if there's at least one started plan */
                         <Card className="border-2 border-teal-100">
                             <CardHeader className="bg-teal-50 pb-4">
@@ -192,6 +177,19 @@ function ClientDashboard() {
                                     </Button>
                                 )}
                             </CardFooter>
+                        </Card>
+                    ) : (
+                        <Card>
+                            <CardContent className="pt-6 pb-6">
+                                <div className="flex flex-col items-center justify-center py-8 text-center">
+                                    <Calendar className="h-12 w-12 text-gray-400 mb-4" />
+                                    <h2 className="text-xl font-semibold mb-2">No Active Training</h2>
+                                    <p className="text-muted-foreground mb-6">You haven't started any training plans yet.</p>
+                                    <Button className="bg-teal-500 hover:bg-teal-600" onClick={() => navigate("/client/plans")}>
+                                        Go to My Plans
+                                    </Button>
+                                </div>
+                            </CardContent>
                         </Card>
                     )}
 

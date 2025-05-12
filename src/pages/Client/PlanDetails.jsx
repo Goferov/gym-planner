@@ -30,7 +30,7 @@ function PlanDetails() {
             setLoading(true)
             const [planData, historyData] = await Promise.all([fetchPlanUser(planId), fetchPlanUserHistory(planId)])
 
-            setPlan(planData)
+            setPlan(planData.data)
             setPlanHistory(historyData.data)
         } catch (err) {
             console.error("Error fetching plan details:", err)
@@ -100,9 +100,9 @@ function PlanDetails() {
             <Card>
                 <CardHeader className="pb-2">
                     <div className="flex justify-between items-start">
-                        <CardTitle className="text-xl">{plan?.plan_name}</CardTitle>
+                        <CardTitle className="text-xl">{plan?.plan?.name || "Loading plan..."}</CardTitle>
                         {plan?.active ? (
-                            <Badge className="bg-teal-500">{plan?.progress}% Complete</Badge>
+                            <Badge className="bg-teal-500">{plan?.progress || 0}% Complete</Badge>
                         ) : (
                             <Badge variant="outline" className="bg-green-100 text-green-800 border-green-200">
                                 <CheckCircle2 className="mr-1 h-3 w-3" />
@@ -112,7 +112,7 @@ function PlanDetails() {
                     </div>
                 </CardHeader>
                 <CardContent>
-                    <Progress value={plan?.progress} className="h-2 mb-6" />
+                    <Progress value={plan?.progress || 0} className="h-2 mb-6" />
 
                     <div className="grid grid-cols-2 gap-4 text-sm">
                         <div className="flex items-center gap-2 text-muted-foreground">
@@ -220,15 +220,9 @@ function PlanDetails() {
                                                                     )}
                                                                 </div>
 
-                                                                <div className="mt-2 grid grid-cols-2 gap-2 text-sm">
-                                                                    <div>
-                                                                        <span className="text-muted-foreground">Sets:</span>{" "}
-                                                                        <span className="font-medium">{exercise.sets}</span>
-                                                                    </div>
-                                                                    <div>
-                                                                        <span className="text-muted-foreground">Reps:</span>{" "}
-                                                                        <span className="font-medium">{exercise.reps}</span>
-                                                                    </div>
+                                                                <div className="mt-2 text-sm">
+                                                                    <span className="text-muted-foreground">Reps:</span>{" "}
+                                                                    <span className="font-medium">{exercise.reps}</span>
                                                                 </div>
 
                                                                 {exercise.difficulty && (

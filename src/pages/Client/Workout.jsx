@@ -165,11 +165,7 @@ function Workout() {
                         )}
 
                         <div className="bg-gray-50 p-4 rounded-lg space-y-4">
-                            <div className="grid grid-cols-2 gap-4 text-center">
-                                <div className="bg-white p-3 rounded-md shadow-sm">
-                                    <div className="text-muted-foreground text-sm">Sets</div>
-                                    <div className="text-2xl font-bold">{currentExercise.sets}</div>
-                                </div>
+                            <div className="grid grid-cols-1 gap-4 text-center">
                                 <div className="bg-white p-3 rounded-md shadow-sm">
                                     <div className="text-muted-foreground text-sm">Reps</div>
                                     <div className="text-2xl font-bold">{currentExercise.reps}</div>
@@ -178,12 +174,6 @@ function Workout() {
                                     <div className="bg-white p-3 rounded-md shadow-sm">
                                         <div className="text-muted-foreground text-sm">Rest</div>
                                         <div className="text-2xl font-bold">{currentExercise.rest_time}s</div>
-                                    </div>
-                                )}
-                                {currentExercise.tempo && (
-                                    <div className="bg-white p-3 rounded-md shadow-sm">
-                                        <div className="text-muted-foreground text-sm">Tempo</div>
-                                        <div className="text-2xl font-bold">{currentExercise.tempo}</div>
                                     </div>
                                 )}
                             </div>
