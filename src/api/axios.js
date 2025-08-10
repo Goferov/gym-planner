@@ -18,7 +18,7 @@ api.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response && error.response.status === 401) {
-            console.warn('Token wygasł lub niepoprawny. Wylogowuję...');
+            console.warn('Token expired or invalid. I am logging off...');
             localStorage.removeItem('token');
             window.location.href = '/login';
         }
@@ -55,18 +55,18 @@ export async function getMe() {
 
 export async function getExercises(params = {}) {
     const { data } = await api.get('/exercises', { params });
-    return data; // Array obiektów Exercise
+    return data;
 }
 
 export async function getExercise(id) {
     const { data } = await api.get(`/exercises/${id}`);
-    return data.data; // Pojedynczy obiekt z polami {id, name, ... muscleGroups ...}
+    return data.data;
 }
 
 
 export async function createExercise(exerciseData) {
     const { data } = await api.post('/exercises', exerciseData);
-    return data; // Zwraca utworzone ćwiczenie
+    return data;
 }
 
 
@@ -161,33 +161,19 @@ export async function getPlan(planId) {
     return data.data; // { data: {...} }
 }
 
-/**
- * Aktualizuje istniejący plan (PUT /plans/:id).
- * planData musi zawierać name, duration_weeks, plan_days (pełny stan).
- * Zwraca zaktualizowany plan.
- */
+
 export async function updatePlan(planId, planData) {
     const { data } = await api.put(`/plans/${planId}`, planData);
     return data;
 }
 
-/**
- * Usuwa plan (DELETE /plans/:id).
- * Zwraca status 204 (no content) przy sukcesie.
- */
+
 export async function deletePlan(planId) {
     const response = await api.delete(`/plans/${planId}`);
-    return response; // {status: 204,...}
+    return response;
 }
 
-/**
- * Przypisuje plan do wielu użytkowników (POST /plans/:id/assign).
- * body:
- *  {
- *    user_ids: number[];
- *  }
- * Zwraca { message: "Plan assigned to users successfully" } (status 201).
- */
+
 export async function assignPlan(planId, userIds) {
     const { data } = await api.post(`/plans/${planId}/assign`, {
         user_ids: userIds,
@@ -195,38 +181,23 @@ export async function assignPlan(planId, userIds) {
     return data;
 }
 
-/**
- * Usuwa przypisanie planu u wskazanych userów (DELETE /plans/:id/unassign).
- * W laravel unassignPlan przyjmuje tablicę user_ids w body.
- * Również plan-> clients()->updateExistingPivot(... active: false).
- * Zwraca { message: "..."} status 200
- *
- * UWAGA: w axios, by dodać body do DELETE, używamy:
- *   { data: { user_ids: [ ... ] } }
- */
+
 export async function unassignPlan(planId, userIds) {
-    // w laravel definicja: DELETE /plans/{plan}/unassign, w body user_ids
     const response = await api.delete(`/plans/${planId}/unassign`, {
         data: { user_ids: userIds }
     });
-    return response.data; // np. {message: "..."} status 200
+    return response.data;
 }
 
-/** Pełna historia wykonania planu (tygodnie/dni/logi) */
 export async function getPlanHistory(planUserId) {
     const { data } = await api.get(`/plan-user/${planUserId}/history`);
-    return data; // PlanUserHistoryResource
+    return data;
 }
 
-/** Pobierz wszystkie przypisane plany klienta.
- *  params = { active: 0|1 } // domyślnie 1 (=tylko aktywne)
- */
 export async function getAssignedPlans(params = { active: 1 }) {
     const { data } = await api.get('/plan-user', { params });
-    return data; // Array AssignedPlanResource
+    return data;
 }
-
-
 
 export async function getMetrics()      { return (await api.get('/dashboard/metrics')).data; }
 export async function getPerformance(d) { return (await api.get('/dashboard/performance', { params:{ days:d } })).data; }
@@ -288,6 +259,7 @@ export async function fetchPlanUserHistory(planUserId) {
 export async function fetchPlanDay(planUserId, date = null) {
     const params = date ? { date } : {};
     const { data } = await api.get(`/plan-user/${planUserId}/day`, { params });
+    console.log(data);
     return data;
 }
 
