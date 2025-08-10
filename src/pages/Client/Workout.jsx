@@ -16,7 +16,17 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog"
-import { ArrowLeft, ArrowRight, CheckCircle2, Flag, Star } from "lucide-react"
+import {
+    ArrowLeft,
+    ArrowRight,
+    CheckCircle2,
+    Flag,
+    ChevronDown,
+    ChevronUp,
+    FrownIcon,
+    MehIcon,
+    SmileIcon,
+} from "lucide-react"
 import { toast } from "sonner"
 
 function Workout() {
@@ -36,19 +46,22 @@ function Workout() {
     const [summaryDialogOpen, setSummaryDialogOpen] = useState(false)
     const [timeRemaining, setTimeRemaining] = useState(10)
     const [canProceed, setCanProceed] = useState(false)
+    const [firstExerciseTimerComplete, setFirstExerciseTimerComplete] = useState(false)
+    const [showExerciseDetails, setShowExerciseDetails] = useState(false)
 
     useEffect(() => {
         fetchWorkout()
     }, [planId])
 
-    // Timer for enabling the "Complete Exercise" button
+    // Timer for enabling the "Complete Exercise" button - ONLY for the first exercise
     useEffect(() => {
-        if (!loading && workout) {
+        if (!loading && workout && currentExerciseIndex === 0 && !firstExerciseTimerComplete) {
             const timer = setInterval(() => {
                 setTimeRemaining((prev) => {
                     if (prev <= 1) {
                         clearInterval(timer)
                         setCanProceed(true)
+                        setFirstExerciseTimerComplete(true)
                         return 0
                     }
                     return prev - 1
@@ -57,13 +70,15 @@ function Workout() {
 
             return () => clearInterval(timer)
         }
-    }, [loading, workout])
+    }, [loading, workout, currentExerciseIndex, firstExerciseTimerComplete])
 
-    // Reset timer when moving to next exercise
+    // For subsequent exercises, allow immediate completion
     useEffect(() => {
-        setTimeRemaining(10)
-        setCanProceed(false)
-    }, [currentExerciseIndex])
+        if (currentExerciseIndex > 0 || firstExerciseTimerComplete) {
+            setCanProceed(true)
+            setTimeRemaining(0)
+        }
+    }, [currentExerciseIndex, firstExerciseTimerComplete])
 
     async function fetchWorkout() {
         try {
@@ -281,24 +296,38 @@ function Workout() {
             <Dialog open={difficultyDialogOpen} onOpenChange={setDifficultyDialogOpen}>
                 <DialogContent className="sm:max-w-md">
                     <DialogHeader>
-                        <DialogTitle className="text-2xl">How Difficult Was This?</DialogTitle>
-                        <DialogDescription className="text-lg pt-2">Rate the difficulty of this exercise</DialogDescription>
+                        <DialogTitle className="text-2xl text-center">How Difficult Was This?</DialogTitle>
+                        <DialogDescription className="text-lg pt-2 text-center">
+                            Rate the difficulty of this exercise
+                        </DialogDescription>
                     </DialogHeader>
 
                     <div className="py-6">
-                        <div className="flex justify-center mb-8">
-                            {[1, 2, 3, 4, 5].map((rating) => (
+                        <div className="flex justify-center gap-4 mb-8">
+                            {[
+                                { value: 1, icon: FrownIcon, label: "Very Hard" },
+                                { value: 2, icon: FrownIcon, label: "Hard" },
+                                { value: 3, icon: MehIcon, label: "Moderate" },
+                                { value: 4, icon: SmileIcon, label: "Easy" },
+                                { value: 5, icon: SmileIcon, label: "Very Easy" },
+                            ].map((rating) => (
                                 <Button
-                                    key={rating}
+                                    key={rating.value}
                                     type="button"
-                                    variant="ghost"
-                                    className={`h-16 w-16 p-0 ${
-                                        selectedDifficulty === rating ? "text-amber-500" : "text-gray-300 hover:text-amber-300"
+                                    variant="outline"
+                                    className={`flex flex-col items-center p-4 h-auto ${
+                                        selectedDifficulty === rating.value
+                                            ? "bg-amber-100 border-amber-500 text-amber-700"
+                                            : "hover:bg-amber-50"
                                     }`}
-                                    onClick={() => setSelectedDifficulty(rating)}
+                                    onClick={() => setSelectedDifficulty(rating.value)}
                                 >
-                                    <Star className="h-12 w-12 fill-current" />
-                                    <span className="sr-only">{rating} stars</span>
+                                    <rating.icon
+                                        className={`h-12 w-12 mb-2 ${
+                                            rating.value <= 2 ? "text-red-500" : rating.value === 3 ? "text-amber-500" : "text-green-500"
+                                        }`}
+                                    />
+                                    <span className="text-sm font-medium">{rating.label}</span>
                                 </Button>
                             ))}
                         </div>
@@ -362,20 +391,29 @@ function Workout() {
                                     <p className="text-xl text-muted-foreground">{summary.progress}% of today's workout</p>
                                 </div>
 
-                                {/* Today's exercises summary */}
                                 <div className="mt-6 bg-gray-50 p-4 rounded-lg">
-                                    <h4 className="text-xl font-semibold mb-4 text-center">Today's Exercises</h4>
-                                    <div className="space-y-3">
-                                        {workout.exercises.map((exercise, index) => (
-                                            <div key={index} className="flex items-center bg-white p-3 rounded-md shadow-sm">
-                                                <CheckCircle2 className="h-6 w-6 text-green-500 mr-3 flex-shrink-0" />
-                                                <div>
-                                                    <p className="font-medium text-lg">{exercise.exercise_name}</p>
-                                                    <p className="text-muted-foreground">{exercise.reps} repetitions</p>
+                                    <Button
+                                        variant="ghost"
+                                        className="w-full flex items-center justify-between py-3 text-xl font-semibold"
+                                        onClick={() => setShowExerciseDetails(!showExerciseDetails)}
+                                    >
+                                        <span>Today's Exercises</span>
+                                        {showExerciseDetails ? <ChevronUp className="h-6 w-6" /> : <ChevronDown className="h-6 w-6" />}
+                                    </Button>
+
+                                    {showExerciseDetails && (
+                                        <div className="space-y-3 mt-3">
+                                            {workout.exercises.map((exercise, index) => (
+                                                <div key={index} className="flex items-center bg-white p-3 rounded-md shadow-sm">
+                                                    <CheckCircle2 className="h-6 w-6 text-green-500 mr-3 flex-shrink-0" />
+                                                    <div>
+                                                        <p className="font-medium text-lg">{exercise.exercise_name}</p>
+                                                        <p className="text-muted-foreground">{exercise.reps} repetitions</p>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        ))}
-                                    </div>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         )}
