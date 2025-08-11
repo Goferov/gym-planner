@@ -2,7 +2,7 @@
 
 A web UI for a personal training platform. **Trainers** manage exercises, clients and plans; **clients** follow daily workouts, complete exercises, and report difficulties. Pairs with the Laravel API.
 
-**Backend repo:** https://github.com/Goferov/gym-planner
+**Backend repo:** https://github.com/Goferov/gym-planner-api
 
 ---
 
